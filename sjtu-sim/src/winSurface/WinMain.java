@@ -252,14 +252,19 @@ public class WinMain {
         Plot testPlot = new Plot();
         panelPlot.add(testPlot, BorderLayout.CENTER);
         
+        //下面这两句要放在addtab前--zh
+        
+        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
+        testPlot.setButtons(true);// 有效，非常重要
+        
         mainTabbedPane.addTab("画图测试面板", panelPlot);
-        mainTabbedPane.setEnabledAt(2,true);
+        mainTabbedPane.setEnabledAt(2,true);      
+
         // mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
         
         // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // 没有效果
         // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // 有效
-        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
-        testPlot.setButtons(true);// 有效，非常重要
+
         testPlot.addPoint(1, 0.4, 0.5, true); // 无效，有待研究
         testPlot.addPoint(1, 0.9, 10, true);
         testPlot.addPoint(0, 1.0, 15, true);
@@ -267,20 +272,20 @@ public class WinMain {
         testPlot.fillPlot();
 
 
-        /*JPanel panelPlot1 = new JPanel();
-        mainTabbedPane.addTab("画图测试面板1", panelPlot1);
-        mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
-
+        JPanel panelPlot1 = new JPanel();
         Plot testPlot1 = new Plot();
         panelPlot1.add(testPlot1);
-        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // 没有效果
-        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // 有效
         testPlot1.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
         testPlot1.setButtons(true);// 有效，非常重要
+        mainTabbedPane.addTab("画图测试面板1", panelPlot1);
+        mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);  
+        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // 没有效果
+        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // 有效
+
         testPlot1.addPoint(1, 0.4, 0.5, true); // 无效，有待研究
         testPlot1.addPoint(1, 0.9, 10, true);
         testPlot1.addPoint(1, 1.0, 15, true);
-        testPlot1.fillPlot();   */    
+        testPlot1.fillPlot();       
 
         // 开启服务器程序，等待客户端的仿真数据
         ServerSocket server;
