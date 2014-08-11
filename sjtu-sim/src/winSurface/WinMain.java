@@ -13,7 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import java.util.*; // java数据结构的包，用到其中的 arrayList
-//test update -zh 8-11
+//测试 -zh 8-11
 public class WinMain {
 
     /****************************************************************
