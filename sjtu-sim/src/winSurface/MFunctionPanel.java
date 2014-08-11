@@ -29,22 +29,22 @@ public class MFunctionPanel implements ActionListener {
 		int result;
 
 		String cmd = e.getActionCommand();
-		if (cmd.equals("È·¶¨")) {
+		if (cmd.equals("ç¡®å®š")) {
 			if (creatMFunction()) {
 				dialog.dispose();
 			} else {
-				ErrorInfo("mº¯ÊıÉú³ÉÊ§°Ü£¬Çë¼ì²é²ÎÊıÊÇ·ñÍêÕû»ò¸ñÊ½ÊÇ·ñÕıÈ·");
+				ErrorInfo("må‡½æ•°ç”Ÿæˆå¤±è´¥ï¼Œè¯·æ£€æŸ¥å‚æ•°æ˜¯å¦å®Œæ•´æˆ–æ ¼å¼æ˜¯å¦æ­£ç¡®");
 			}
 
-		} else if (cmd.equals("È¡Ïû")) {
+		} else if (cmd.equals("å–æ¶ˆ")) {
 			dialog.dispose();
-		} else if (cmd.equals("¹¤×÷¿Õ¼ä")) {
+		} else if (cmd.equals("å·¥ä½œç©ºé—´")) {
 			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fileChooser.setApproveButtonText("È·¶¨");
-			fileChooser.setDialogTitle("ÉèÖÃmatlab¹¤×÷¿Õ¼äÄ¿Â¼");
+			fileChooser.setApproveButtonText("ç¡®å®š");
+			fileChooser.setDialogTitle("è®¾ç½®matlabå·¥ä½œç©ºé—´ç›®å½•");
 			result = fileChooser.showOpenDialog(f);
 			if (result == JFileChooser.APPROVE_OPTION) {
-				// »ñµÃ¸ÃÎÄ¼ş
+				// è·å¾—è¯¥æ–‡ä»¶
 				file = fileChooser.getSelectedFile();
 				path = file.getPath();
 				// System.out.println(path);
@@ -58,7 +58,7 @@ public class MFunctionPanel implements ActionListener {
 	@SuppressWarnings("deprecation")
 	MFunctionPanel(JFrame frame) {
 		this.f = frame;
-		dialog = new JDialog(f, "Éú³Émº¯Êı", true);
+		dialog = new JDialog(f, "ç”Ÿæˆmå‡½æ•°", true);
 		GridBagConstraints c;
 		int gridx, gridy, gridwidth, gridheight, anchor, fill, ipadx, ipady;
 		double weightx, weighty;
@@ -68,24 +68,24 @@ public class MFunctionPanel implements ActionListener {
 		Container dialogPane = dialog.getContentPane();
 		dialogPane.setLayout(gridbag);
 
-		JLabel label = new JLabel("º¯ÊıÃû³Æ£º");
-		gridx = 0; // µÚ0ÁĞ
-		gridy = 0; // µÚ0ĞĞ
-		gridwidth = 1; // Õ¼Ò»µ¥Î»¿í¶È
-		gridheight = 1; // Õ¼Ò»µ¥Î»¸ß¶È
-		weightx = 0; // ´°¿ÚÔö´óÊ±×é¼ş¿í¶ÈÔö´ó±ÈÂÊ0
-		weighty = 0; // ´°¿ÚÔö´óÊ±×é¼ş¸ß¶ÈÔö´ó±ÈÂÊ0
-		anchor = GridBagConstraints.CENTER; // ÈİÆ÷´óÓÚ×é¼şÊ±½«×é¼şÖÃÓÚÈİÆ÷ÖĞÑë
-		fill = GridBagConstraints.BOTH; // ´°¿ÚÀ­´óÊ±»áÌîÂúË®Æ½Óë´¹Ö±¿Õ¼ä
-		inset = new Insets(0, 0, 0, 0); // ×é¼ş¼ä¼ä¾à
-		ipadx = 0; // ×é¼şÄÚË®Æ½¿í¶È
-		ipady = 0; // ×é¼şÄÚ´¹Ö±¸ß¶È
+		JLabel label = new JLabel("å‡½æ•°åç§°ï¼š");
+		gridx = 0; // ç¬¬0åˆ—
+		gridy = 0; // ç¬¬0è¡Œ
+		gridwidth = 1; // å ä¸€å•ä½å®½åº¦
+		gridheight = 1; // å ä¸€å•ä½é«˜åº¦
+		weightx = 0; // çª—å£å¢å¤§æ—¶ç»„ä»¶å®½åº¦å¢å¤§æ¯”ç‡0
+		weighty = 0; // çª—å£å¢å¤§æ—¶ç»„ä»¶é«˜åº¦å¢å¤§æ¯”ç‡0
+		anchor = GridBagConstraints.CENTER; // å®¹å™¨å¤§äºç»„ä»¶æ—¶å°†ç»„ä»¶ç½®äºå®¹å™¨ä¸­å¤®
+		fill = GridBagConstraints.BOTH; // çª—å£æ‹‰å¤§æ—¶ä¼šå¡«æ»¡æ°´å¹³ä¸å‚ç›´ç©ºé—´
+		inset = new Insets(0, 0, 0, 0); // ç»„ä»¶é—´é—´è·
+		ipadx = 0; // ç»„ä»¶å†…æ°´å¹³å®½åº¦
+		ipady = 0; // ç»„ä»¶å†…å‚ç›´é«˜åº¦
 		c = new GridBagConstraints(gridx, gridy, gridwidth, gridheight,
 				weightx, weighty, anchor, fill, inset, ipadx, ipady);
 		gridbag.setConstraints(label, c);
 		dialogPane.add(label);
 
-		label = new JLabel("º¯Êı²ÎÊı£º");
+		label = new JLabel("å‡½æ•°å‚æ•°ï¼š");
 		gridx = 0;
 		gridy = 2;
 		c = new GridBagConstraints(gridx, gridy, gridwidth, gridheight,
@@ -93,7 +93,7 @@ public class MFunctionPanel implements ActionListener {
 		gridbag.setConstraints(label, c);
 		dialogPane.add(label);
 
-		label = new JLabel("º¯Êı·µ»ØÖµ£º");
+		label = new JLabel("å‡½æ•°è¿”å›å€¼ï¼š");
 		gridx = 0;
 		gridy = 4;
 		c = new GridBagConstraints(gridx, gridy, gridwidth, gridheight,
@@ -101,7 +101,7 @@ public class MFunctionPanel implements ActionListener {
 		gridbag.setConstraints(label, c);
 		dialogPane.add(label);
 
-		label = new JLabel("SimulinkÄ£ĞÍÃû³Æ£º");
+		label = new JLabel("Simulinkæ¨¡å‹åç§°ï¼š");
 		gridx = 2;
 		gridy = 0;
 		c = new GridBagConstraints(gridx, gridy, gridwidth, gridheight,
@@ -159,10 +159,10 @@ public class MFunctionPanel implements ActionListener {
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(1, 2));
-		JButton b = new JButton("È·¶¨");
+		JButton b = new JButton("ç¡®å®š");
 		b.addActionListener(this);
 		panel.add(b);
-		b = new JButton("È¡Ïû");
+		b = new JButton("å–æ¶ˆ");
 		b.addActionListener(this);
 		panel.add(b);
 		gridx = 0;
@@ -176,7 +176,7 @@ public class MFunctionPanel implements ActionListener {
 		dialogPane.add(panel);
 
 		panel = new JPanel();
-		b = new JButton("¹¤×÷¿Õ¼ä");
+		b = new JButton("å·¥ä½œç©ºé—´");
 		b.addActionListener(this);
 		panel.add(b);
 		gridx = 0;
