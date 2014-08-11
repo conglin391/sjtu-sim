@@ -12,19 +12,19 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import java.util.*; // javaÊı¾İ½á¹¹µÄ°ü£¬ÓÃµ½ÆäÖĞµÄ arrayList
-
+import java.util.*; // javaæ•°æ®ç»“æ„çš„åŒ…ï¼Œç”¨åˆ°å…¶ä¸­çš„ arrayList
+//test update -zh 8-11
 public class WinMain {
 
     /****************************************************************
      *******************   private members *************************/
 
     private static final long serialVersionID = 1L;
-    static final int WIN_WIDTH = 900; // ´°¿ÚµÄ³¤
-    static final int WIN_HEIGHT = 450; // ´°¿ÚµÄ¿í
-    static JFrame mainFrame = null; // ³ÌĞòÖ÷´°¿Ú±äÁ¿
+    static final int WIN_WIDTH = 900; // çª—å£çš„é•¿
+    static final int WIN_HEIGHT = 450; // çª—å£çš„å®½
+    static JFrame mainFrame = null; // ç¨‹åºä¸»çª—å£å˜é‡
 
-    static JTabbedPane mainTabbedPane = null; // JRootPaneÖĞÄÚÈİÃæ°åÒª¼ÓÔØµÄÑ¡Ïî¿¨Ãæ°å
+    static JTabbedPane mainTabbedPane = null; // JRootPaneä¸­å†…å®¹é¢æ¿è¦åŠ è½½çš„é€‰é¡¹å¡é¢æ¿
     JMenuBar menuBar = null;
     JMenu menuFile = null;
     JMenu menuEdit = null;
@@ -32,176 +32,176 @@ public class WinMain {
     JMenu menuTool = null;
     JMenu menuHelp = null;
 
-    static ArrayList _aryListVariableName = null; // ÓÃÀ´¼ÇÂ¼Ò»´Î·ÂÕæ¹ı³Ì£¬Éæ¼°µ½µÄÈ«²¿±äÁ¿Ãû³Æ
-    static ArrayList _aryListTabbedPanel = null; // ÓÃÀ´´æ·ÅÑ¡Ïî¿¨µÄ¶¯Ì¬Êı×é
-    static ArrayList _aryListPlotPanel = null; // ÓÃÀ´´æ·ÅÃ¿¸öÑ¡Ïî¿¨ÖĞµÄPlot»­Í¼Ãæ°å
-    static boolean _bSimulationBegin = false; // ÓÃÀ´Ö¸Ê¾µ±Ç°Ê±¼ä£¬½çÃæÊÇ·ñÓĞ·ÂÕæÔÚÔËĞĞ
+    static ArrayList _aryListVariableName = null; // ç”¨æ¥è®°å½•ä¸€æ¬¡ä»¿çœŸè¿‡ç¨‹ï¼Œæ¶‰åŠåˆ°çš„å…¨éƒ¨å˜é‡åç§°
+    static ArrayList _aryListTabbedPanel = null; // ç”¨æ¥å­˜æ”¾é€‰é¡¹å¡çš„åŠ¨æ€æ•°ç»„
+    static ArrayList _aryListPlotPanel = null; // ç”¨æ¥å­˜æ”¾æ¯ä¸ªé€‰é¡¹å¡ä¸­çš„Plotç”»å›¾é¢æ¿
+    static boolean _bSimulationBegin = false; // ç”¨æ¥æŒ‡ç¤ºå½“å‰æ—¶é—´ï¼Œç•Œé¢æ˜¯å¦æœ‰ä»¿çœŸåœ¨è¿è¡Œ
 
 
     public WinMain()
     {
-        // Àà³ÉÔ±±äÁ¿µÄ³õÊ¼»¯
+        // ç±»æˆå‘˜å˜é‡çš„åˆå§‹åŒ–
         _aryListVariableName = new ArrayList();
         _aryListTabbedPanel = new ArrayList();
         _aryListPlotPanel = new ArrayList();
         _bSimulationBegin = false;
 
 
-        // ÏÂÃæ¿ªÊ¼´´½¨³ö½çÃæ´°¿Ú£¬²¢ÔÚ´°¿ÚÖĞÌí¼ÓºÃ¸÷¸ö²Ëµ¥Ïî
+        // ä¸‹é¢å¼€å§‹åˆ›å»ºå‡ºç•Œé¢çª—å£ï¼Œå¹¶åœ¨çª—å£ä¸­æ·»åŠ å¥½å„ä¸ªèœå•é¡¹
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         }
         catch(Exception e){}
-        mainFrame = new JFrame("SimJ&M"); // ´´½¨³ÌĞò´°¿Ú£¬´°¿Ú±êÌâÎª SimJ&M
+        mainFrame = new JFrame("SimJ&M"); // åˆ›å»ºç¨‹åºçª—å£ï¼Œçª—å£æ ‡é¢˜ä¸º SimJ&M
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setVisible(true); // Ä¬ÈÏÎªfalse
-        mainFrame.setSize(WIN_WIDTH, WIN_HEIGHT); // ÉèÖÃ´°¿ÚµÄ³ß´ç
-        // »ñÈ¡ÆÁÄ»´óĞ¡£¬²¢ÉèÖÃ´°¿Ú³õÊ¼µÄÏÔÊ¾Î»ÖÃ
+        mainFrame.setVisible(true); // é»˜è®¤ä¸ºfalse
+        mainFrame.setSize(WIN_WIDTH, WIN_HEIGHT); // è®¾ç½®çª—å£çš„å°ºå¯¸
+        // è·å–å±å¹•å¤§å°ï¼Œå¹¶è®¾ç½®çª—å£åˆå§‹çš„æ˜¾ç¤ºä½ç½®
         Toolkit kit= Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
         int x = (screenSize.width - WIN_WIDTH)/2;
         int y = (screenSize.height - WIN_HEIGHT)/2;
-        mainFrame.setLocation(x, y); // ÉèÖÃ´°¿Ú³öÏÖÊ±£¬ÔÚÆÁÄ»µÄÖĞÑë
+        mainFrame.setLocation(x, y); // è®¾ç½®çª—å£å‡ºç°æ—¶ï¼Œåœ¨å±å¹•çš„ä¸­å¤®
 
-        // ´´½¨²Ëµ¥Ïî£¬²¢Ìí¼Ó²Ëµ¥À¸
-        menuBar = new JMenuBar(); // ´´½¨³ö²Ëµ¥À¸
-        mainFrame.setJMenuBar(menuBar); // ½«²Ëµ¥ÌõÌí¼Óµ½´°¿ÚÖĞ
+        // åˆ›å»ºèœå•é¡¹ï¼Œå¹¶æ·»åŠ èœå•æ 
+        menuBar = new JMenuBar(); // åˆ›å»ºå‡ºèœå•æ 
+        mainFrame.setJMenuBar(menuBar); // å°†èœå•æ¡æ·»åŠ åˆ°çª—å£ä¸­
 
-        menuFile = new JMenu("ÎÄ¼ş(F)");
-        menuFile.setMnemonic('F'); // ÉèÖÃÕâ¸ö²Ëµ¥µÄ¿ì½İ¼üÎª 'F'
-        menuEdit = new JMenu("±à¼­(E)");
+        menuFile = new JMenu("æ–‡ä»¶(F)");
+        menuFile.setMnemonic('F'); // è®¾ç½®è¿™ä¸ªèœå•çš„å¿«æ·é”®ä¸º 'F'
+        menuEdit = new JMenu("ç¼–è¾‘(E)");
         menuEdit.setMnemonic('E');
-        menuView = new JMenu("ÊÓÍ¼(V)");
+        menuView = new JMenu("è§†å›¾(V)");
         menuView.setMnemonic('V');
-        menuTool = new JMenu("¹¤¾ß(T)");
+        menuTool = new JMenu("å·¥å…·(T)");
         menuTool.setMnemonic('T');
-        menuHelp = new JMenu("°ïÖú(H)");
+        menuHelp = new JMenu("å¸®åŠ©(H)");
         menuHelp.setMnemonic('H');
 
-        // ½«´´½¨ºÃµÄ²Ëµ¥Ìí¼Óµ½²Ëµ¥ÌõÖĞ
+        // å°†åˆ›å»ºå¥½çš„èœå•æ·»åŠ åˆ°èœå•æ¡ä¸­
         menuBar.add(menuFile);
         menuBar.add(menuEdit);
         menuBar.add(menuView);
         menuBar.add(menuTool);
         menuBar.add(menuHelp);
 
-        // ´´½¨²Ëµ¥Ïî£¬²¢ÉèÖÃºÃ¿ì½İ¼ü
-        JMenuItem menuItemOpenInFile = new JMenuItem("´ò¿ª(O)");
-        // Îª¡°´ò¿ª¡±Õâ¸ö²Ëµ¥Ïî Éè¶¨ ¿ì½İ¼ü --- Ctrl + O
+        // åˆ›å»ºèœå•é¡¹ï¼Œå¹¶è®¾ç½®å¥½å¿«æ·é”®
+        JMenuItem menuItemOpenInFile = new JMenuItem("æ‰“å¼€(O)");
+        // ä¸ºâ€œæ‰“å¼€â€è¿™ä¸ªèœå•é¡¹ è®¾å®š å¿«æ·é”® --- Ctrl + O
         menuItemOpenInFile.setAccelerator(KeyStroke.getKeyStroke('O', java.awt.Event.CTRL_MASK, false));
-        menuFile.add(menuItemOpenInFile); // ½«Õâ¸ö²Ëµ¥ÏîÌí¼Óµ½¡°ÎÄ¼ş¡±²Ëµ¥ÏÂ
+        menuFile.add(menuItemOpenInFile); // å°†è¿™ä¸ªèœå•é¡¹æ·»åŠ åˆ°â€œæ–‡ä»¶â€èœå•ä¸‹
         menuFile.addSeparator();
 
-        JMenuItem menuItemOpenMATALBInFile = new JMenuItem("Æô¶¯MATALB");
+        JMenuItem menuItemOpenMATALBInFile = new JMenuItem("å¯åŠ¨MATALB");
         menuFile.add(menuItemOpenMATALBInFile);
 
-        JMenuItem menuItemOpenPTInFile = new JMenuItem("Æô¶¯ Vergil");
+        JMenuItem menuItemOpenPTInFile = new JMenuItem("å¯åŠ¨ Vergil");
         menuFile.add(menuItemOpenPTInFile);
 
         menuFile.addSeparator();
-        JMenuItem menuItemExitInFile = new JMenuItem("ÍË³ö³ÌĞò(X)");
+        JMenuItem menuItemExitInFile = new JMenuItem("é€€å‡ºç¨‹åº(X)");
         menuItemExitInFile.setAccelerator(KeyStroke.getKeyStroke('X', java.awt.Event.CTRL_MASK, false));
         menuFile.add(menuItemExitInFile);        
 
-        JMenuItem menuItemGetHelpInHelp = new JMenuItem("Ê¹ÓÃËµÃ÷");
+        JMenuItem menuItemGetHelpInHelp = new JMenuItem("ä½¿ç”¨è¯´æ˜");
         menuHelp.add(menuItemGetHelpInHelp);
         menuHelp.addSeparator();
 
-        JMenuItem menuItemInfoInHelp = new JMenuItem("¹ØÓÚSimJ&M");
+        JMenuItem menuItemInfoInHelp = new JMenuItem("å…³äºSimJ&M");
         menuHelp.add(menuItemInfoInHelp);
 
 
-        // ÏÂÃæ¿ªÊ¼´´½¨Ñ¡Ïî¿¨Ãæ°å£¬²¢´´½¨Ò»¸ö¡°¿ªÊ¼¡±Ñ¡Ïî¿¨¼ÓÈëµ½Ñ¡Ïî¿¨Ãæ°åÖĞÈ¥
-        mainTabbedPane = new JTabbedPane(); // ´´½¨´°¿Ú¼ÓÔØµÄÑ¡Ïî¿¨Ãæ°å
-        mainFrame.setContentPane(mainTabbedPane); // ÉèÖÃ´°¿ÚµÄÏÔÊ¾Ãæ°åÎª ÉÏÃæµÄÑ¡Ïî¿¨Ãæ°å
-        mainTabbedPane.setVisible(true); // ÉèÖÃÕâ¸öÑ¡Ïî¿¨Ãæ°å¿É¼û
-        // ÉèÖÃÑ¡Ïî¿¨Ãæ°åµÄ´óĞ¡¼°ÆäÑ¡Ïî¿¨µÄÎ»ÖÃ·½Ïò
+        // ä¸‹é¢å¼€å§‹åˆ›å»ºé€‰é¡¹å¡é¢æ¿ï¼Œå¹¶åˆ›å»ºä¸€ä¸ªâ€œå¼€å§‹â€é€‰é¡¹å¡åŠ å…¥åˆ°é€‰é¡¹å¡é¢æ¿ä¸­å»
+        mainTabbedPane = new JTabbedPane(); // åˆ›å»ºçª—å£åŠ è½½çš„é€‰é¡¹å¡é¢æ¿
+        mainFrame.setContentPane(mainTabbedPane); // è®¾ç½®çª—å£çš„æ˜¾ç¤ºé¢æ¿ä¸º ä¸Šé¢çš„é€‰é¡¹å¡é¢æ¿
+        mainTabbedPane.setVisible(true); // è®¾ç½®è¿™ä¸ªé€‰é¡¹å¡é¢æ¿å¯è§
+        // è®¾ç½®é€‰é¡¹å¡é¢æ¿çš„å¤§å°åŠå…¶é€‰é¡¹å¡çš„ä½ç½®æ–¹å‘
         //mainTabbedPane.setPreferredSize(new Dimension(500,200));
         mainTabbedPane.setTabPlacement(JTabbedPane.TOP);
-        // ÉèÖÃÑ¡Ïî¿¨ÔÚÈİÆ÷ÄÚµÄÏÔÊ¾ĞÎÊ½
+        // è®¾ç½®é€‰é¡¹å¡åœ¨å®¹å™¨å†…çš„æ˜¾ç¤ºå½¢å¼
         mainTabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
         //mainTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        // mainFrame.pack(); // ÈÃÖ÷´°¿ÚÊÊÓ¦×é¼şµÄ´óĞ¡
+        // mainFrame.pack(); // è®©ä¸»çª—å£é€‚åº”ç»„ä»¶çš„å¤§å°
 
-        // Ìí¼ÓÑ¡Ïî¿¨ÈİÆ÷£¬²¢ÇÒÉèÖÃÃ¿¸öÑ¡Ïî¿¨µÄ±êÇ©ÒÔ¼°ÆäÊÇ·ñ¿ÉÓÃ
+        // æ·»åŠ é€‰é¡¹å¡å®¹å™¨ï¼Œå¹¶ä¸”è®¾ç½®æ¯ä¸ªé€‰é¡¹å¡çš„æ ‡ç­¾ä»¥åŠå…¶æ˜¯å¦å¯ç”¨
         JPanel panel0 = new JPanel();
-        mainTabbedPane.addTab("¿ªÊ¼",panel0); // ½«¡°¿ªÊ¼¡±Ãæ°å panel0 ×÷ÎªµÚÒ»¸öÑ¡Ïî¿¨
+        mainTabbedPane.addTab("å¼€å§‹",panel0); // å°†â€œå¼€å§‹â€é¢æ¿ panel0 ä½œä¸ºç¬¬ä¸€ä¸ªé€‰é¡¹å¡
         mainTabbedPane.setEnabledAt(0,true);
 
 
-        // ¾­¹ıÒÔÉÏ¹¤×÷£¬»ù±¾µÄ´°¿Ú£¬Ñ¡Ïî¿¨Ãæ°åÒÔ¼°²Ëµ¥¶¼´´½¨Íê±Ï£¬ÏÂÃæ¿ªÊ¼Õë¶ÔÃ¿¸ö²Ëµ¥ÏîÌí¼ÓÏàÓ¦µÄÊÂ¼ş´¦Àí»úÖÆ
+        // ç»è¿‡ä»¥ä¸Šå·¥ä½œï¼ŒåŸºæœ¬çš„çª—å£ï¼Œé€‰é¡¹å¡é¢æ¿ä»¥åŠèœå•éƒ½åˆ›å»ºå®Œæ¯•ï¼Œä¸‹é¢å¼€å§‹é’ˆå¯¹æ¯ä¸ªèœå•é¡¹æ·»åŠ ç›¸åº”çš„äº‹ä»¶å¤„ç†æœºåˆ¶
         menuItemOpenInFile.addActionListener(new ActionListener()
         {
-            /* ¡°´ò¿ª¡±ÎÄ¼ş²Ëµ¥ÏîµÄ¶¯×÷ÊÂ¼ş£¬µ±µ¥»÷Õâ¸ö²Ëµ¥ÏîÊ±£¬»áµ¯³öÎÄ¼şÑ¡Ôñ¶Ô»°¿ò£¬Ä¿±êÊÇÈÃÓÃ»§Ñ¡Ôñ .xml Ä£ĞÍÎÄ¼ş
-             * ÔÚÓÃ»§Ñ¡ÔñºÃÎÄ¼şÖ®ºó£¬»ñÈ¡±»Ñ¡ÖĞµÄÎÄ¼şÂ·¾¶È«³Æ£¬²¢´«µİ¸ø Ptolemy II£¬¿ªÆô·ÂÕæ 
+            /* â€œæ‰“å¼€â€æ–‡ä»¶èœå•é¡¹çš„åŠ¨ä½œäº‹ä»¶ï¼Œå½“å•å‡»è¿™ä¸ªèœå•é¡¹æ—¶ï¼Œä¼šå¼¹å‡ºæ–‡ä»¶é€‰æ‹©å¯¹è¯æ¡†ï¼Œç›®æ ‡æ˜¯è®©ç”¨æˆ·é€‰æ‹© .xml æ¨¡å‹æ–‡ä»¶
+             * åœ¨ç”¨æˆ·é€‰æ‹©å¥½æ–‡ä»¶ä¹‹åï¼Œè·å–è¢«é€‰ä¸­çš„æ–‡ä»¶è·¯å¾„å…¨ç§°ï¼Œå¹¶ä¼ é€’ç»™ Ptolemy IIï¼Œå¼€å¯ä»¿çœŸ 
              * */
             public void actionPerformed(ActionEvent Event)
             {
-                // ´´½¨Ò»¸öÎÄ¼şÑ¡Ôñ¶Ô»°¿ò£¬¹©ÓÃ»§Ñ¡Ôñ .xml ÎÄ¼ş
+                // åˆ›å»ºä¸€ä¸ªæ–‡ä»¶é€‰æ‹©å¯¹è¯æ¡†ï¼Œä¾›ç”¨æˆ·é€‰æ‹© .xml æ–‡ä»¶
                 JFileChooser fileChooser = new JFileChooser("D:\\");
                 File file = null;
                 int iResult = 0;
-                fileChooser.setApproveButtonText("È·¶¨");
-                fileChooser.setDialogTitle("´ò¿ªÎÄ¼ş");
+                fileChooser.setApproveButtonText("ç¡®å®š");
+                fileChooser.setDialogTitle("æ‰“å¼€æ–‡ä»¶");
                 iResult = fileChooser.showOpenDialog(mainFrame);
-                /* µ±ÓÃ»§ÓĞÑ¡ÖĞÎÄ¼ş ²¢ÇÒ°´ÏÂ"È·¶¨"°´Å¥ºó£¬¾Í¿ÉÒÔÍ¨¹ı getSelectedFile() ·½·¨È¡µÃÎÄ¼ş¶ÔÏó
+                /* å½“ç”¨æˆ·æœ‰é€‰ä¸­æ–‡ä»¶ å¹¶ä¸”æŒ‰ä¸‹"ç¡®å®š"æŒ‰é’®åï¼Œå°±å¯ä»¥é€šè¿‡ getSelectedFile() æ–¹æ³•å–å¾—æ–‡ä»¶å¯¹è±¡
                  * */
                 if( iResult == JFileChooser.APPROVE_OPTION )
                 {
-                    // ÓÃ»§°´ÏÂµÄ¡°È·¶¨¡±°´Å¥
+                    // ç”¨æˆ·æŒ‰ä¸‹çš„â€œç¡®å®šâ€æŒ‰é’®
                     file = fileChooser.getSelectedFile();
-                    System.out.println("Ñ¡ÔñµÄÎÄ¼şÃû£º" + file.getName());
-                    System.out.println("Ñ¡ÔñµÄÎÄ¼şÃû£º" + file.getAbsolutePath());
+                    System.out.println("é€‰æ‹©çš„æ–‡ä»¶åï¼š" + file.getName());
+                    System.out.println("é€‰æ‹©çš„æ–‡ä»¶åï¼š" + file.getAbsolutePath());
 
                     String fileName = file.getName();
-                    if( fileName.endsWith("xml") ) // Ñ¡ÖĞµÄÈ·ÊµÊÇxmlÎÄ¼ş
+                    if( fileName.endsWith("xml") ) // é€‰ä¸­çš„ç¡®å®æ˜¯xmlæ–‡ä»¶
                     {
-                        // ½«Ñ¡ÖĞµÄxmlÎÄ¼ş´«¸ø Vergil£¬¿ªÆô·ÂÕæ
+                        // å°†é€‰ä¸­çš„xmlæ–‡ä»¶ä¼ ç»™ Vergilï¼Œå¼€å¯ä»¿çœŸ
                         //String startVergilcmd = "vergil -run E:\\PT_workspace\\pvbattery_50-60_org.xml";
                         String startVergilcmd = "vergil -run " + file.getAbsolutePath();
 
-                        // ¼ì²éÊÇ·ñÒÑ¾­ÓĞ·ÂÕæÔÚ½øĞĞ
+                        // æ£€æŸ¥æ˜¯å¦å·²ç»æœ‰ä»¿çœŸåœ¨è¿›è¡Œ
                         if( _bSimulationBegin == true )
                         {
-                            // µ¯³ö¶Ô»°¿òÌáÊ¾ÓÃ»§£¬ÊÇ·ñ½áÊøµ±Ç°·ÂÕæ£¬²¢¿ªÆôĞÂµÄ·ÂÕæ
+                            // å¼¹å‡ºå¯¹è¯æ¡†æç¤ºç”¨æˆ·ï¼Œæ˜¯å¦ç»“æŸå½“å‰ä»¿çœŸï¼Œå¹¶å¼€å¯æ–°çš„ä»¿çœŸ
                             int iStartNewSim = JOptionPane.showConfirmDialog(mainFrame, 
-                                    "Ä¿Ç°ÏµÍ³ÒÑ¾­ÓĞ·ÂÕæ³ÌĞòÔÚÔËĞĞ£¬ÊÇ·ñ½áÊøµ±Ç°·ÂÕæ³ÌĞò²¢¿ªÆôĞÂµÄ·ÂÕæ", 
-                                    "ÊÇ·ñ½áÊøµ±Ç°·ÂÕæ³ÌĞò", 
+                                    "ç›®å‰ç³»ç»Ÿå·²ç»æœ‰ä»¿çœŸç¨‹åºåœ¨è¿è¡Œï¼Œæ˜¯å¦ç»“æŸå½“å‰ä»¿çœŸç¨‹åºå¹¶å¼€å¯æ–°çš„ä»¿çœŸ", 
+                                    "æ˜¯å¦ç»“æŸå½“å‰ä»¿çœŸç¨‹åº", 
                                     JOptionPane.YES_NO_OPTION);
                             if( iStartNewSim == JOptionPane.YES_OPTION )
                             {
-                                // Çå³şµ±Ç°·ÂÕæµÄËùÓĞÑ¡Ïî¿¨ÒÔ¼°Ïà¹ØĞÅÏ¢
-                                // _clearOldSimulation(); ´Ë´¦¿¼ÂÇÔİ²»Ö´ĞĞÕâ¸öº¯Êı£¬±£Áô¾ÉµÄ·ÂÕæËùÓĞĞÅÏ¢£¬ÒòÎª¿ÉÄÜĞÂµÄ·ÂÕæÎŞĞ§£¨±ÈÈçxml²»ÕıÈ·£©                      
+                                // æ¸…æ¥šå½“å‰ä»¿çœŸçš„æ‰€æœ‰é€‰é¡¹å¡ä»¥åŠç›¸å…³ä¿¡æ¯
+                                // _clearOldSimulation(); æ­¤å¤„è€ƒè™‘æš‚ä¸æ‰§è¡Œè¿™ä¸ªå‡½æ•°ï¼Œä¿ç•™æ—§çš„ä»¿çœŸæ‰€æœ‰ä¿¡æ¯ï¼Œå› ä¸ºå¯èƒ½æ–°çš„ä»¿çœŸæ— æ•ˆï¼ˆæ¯”å¦‚xmlä¸æ­£ç¡®ï¼‰                      
                             }
                             else
                             {
-                                return; // ÊÂ¼ş´¦Àíº¯Êı½áÊø£¬²»»áÆô¶¯ĞÂµÄ·ÂÕæ
+                                return; // äº‹ä»¶å¤„ç†å‡½æ•°ç»“æŸï¼Œä¸ä¼šå¯åŠ¨æ–°çš„ä»¿çœŸ
                             }                            
                         } //  if( _bSimulationBegin == true )
 
                         // _startNewSimulationInVergil(startVergilcmd);
-                        Runtime run = Runtime.getRuntime(); //Æô¶¯ÓëÓ¦ÓÃ³ÌĞòÏà¹ØµÄÔËĞĞÊ±¶ÔÏó
-                        // ÕâÀïÒÑ¾­ÊÔ¹ı£¬±ØĞëÊ¹ÓÃtry-catch½á¹¹²ÅĞĞ
+                        Runtime run = Runtime.getRuntime(); //å¯åŠ¨ä¸åº”ç”¨ç¨‹åºç›¸å…³çš„è¿è¡Œæ—¶å¯¹è±¡
+                        // è¿™é‡Œå·²ç»è¯•è¿‡ï¼Œå¿…é¡»ä½¿ç”¨try-catchç»“æ„æ‰è¡Œ
                         try {   
-                            Process p = run.exec(startVergilcmd);// Æô¶¯ÁíÒ»¸ö½ø³ÌÀ´Ö´ĞĞ Ö¸¶¨µÄÏµÍ³ ÃüÁî   
+                            Process p = run.exec(startVergilcmd);// å¯åŠ¨å¦ä¸€ä¸ªè¿›ç¨‹æ¥æ‰§è¡Œ æŒ‡å®šçš„ç³»ç»Ÿ å‘½ä»¤   
                             BufferedInputStream in = new BufferedInputStream(p.getInputStream());   
                             BufferedReader inBr = new BufferedReader(new InputStreamReader(in));   
                             String lineStr;   
                             while ((lineStr = inBr.readLine()) != null)   
-                                //»ñµÃÃüÁîÖ´ĞĞºóÔÚ¿ØÖÆÌ¨µÄÊä³öĞÅÏ¢   
-                                // ¿ØÖÆÌ¨ÓĞÊä³öĞÅÏ¢£¬ÄÇËµÃ÷±¾»úÃ»ÓĞ°²×°ºÃPtolemy II»òÕßÃ»ÓĞÎªPtolemy IIÉèÖÃºÃ»·¾³±äÁ¿
+                                //è·å¾—å‘½ä»¤æ‰§è¡Œååœ¨æ§åˆ¶å°çš„è¾“å‡ºä¿¡æ¯   
+                                // æ§åˆ¶å°æœ‰è¾“å‡ºä¿¡æ¯ï¼Œé‚£è¯´æ˜æœ¬æœºæ²¡æœ‰å®‰è£…å¥½Ptolemy IIæˆ–è€…æ²¡æœ‰ä¸ºPtolemy IIè®¾ç½®å¥½ç¯å¢ƒå˜é‡
 
-                                System.out.println(lineStr);// ´òÓ¡Êä³öĞÅÏ¢   
-                            //¼ì²éÃüÁîÊÇ·ñÖ´ĞĞÊ§°Ü¡£   
+                                System.out.println(lineStr);// æ‰“å°è¾“å‡ºä¿¡æ¯   
+                            //æ£€æŸ¥å‘½ä»¤æ˜¯å¦æ‰§è¡Œå¤±è´¥ã€‚   
                             if (p.waitFor() != 0) {   
-                                if (p.exitValue() == 1)//p.exitValue()==0±íÊ¾Õı³£½áÊø£¬1£º·ÇÕı³£½áÊø 
+                                if (p.exitValue() == 1)//p.exitValue()==0è¡¨ç¤ºæ­£å¸¸ç»“æŸï¼Œ1ï¼šéæ­£å¸¸ç»“æŸ 
                                     JOptionPane.showMessageDialog(mainFrame, 
-                                            lineStr + "!" + "³öÏÖÕâÖÖ´íÎó£¬ÓĞÁ½ÖÖ¿ÉÄÜ£º£¨1£©±¾»úÃ»ÓĞ°²×°Ptomely II£»\n;"
-                                                    + "£¨2£©±¾»úÒÑÕıÈ·°²×°ÁËPtolemy II£¬µ«ÊÇÃ»ÓĞÎªÆäÉèÖÃºÃÏµÍ³»·¾³±äÁ¿", 
-                                                    "ÎŞ·¨Æô¶¯Vergil", 
+                                            lineStr + "!" + "å‡ºç°è¿™ç§é”™è¯¯ï¼Œæœ‰ä¸¤ç§å¯èƒ½ï¼šï¼ˆ1ï¼‰æœ¬æœºæ²¡æœ‰å®‰è£…Ptomely IIï¼›\n;"
+                                                    + "ï¼ˆ2ï¼‰æœ¬æœºå·²æ­£ç¡®å®‰è£…äº†Ptolemy IIï¼Œä½†æ˜¯æ²¡æœ‰ä¸ºå…¶è®¾ç½®å¥½ç³»ç»Ÿç¯å¢ƒå˜é‡", 
+                                                    "æ— æ³•å¯åŠ¨Vergil", 
                                                     JOptionPane.ERROR_MESSAGE);
-                                System.err.println("ÃüÁîÖ´ĞĞÊ§°Ü!  ");   
+                                System.err.println("å‘½ä»¤æ‰§è¡Œå¤±è´¥!  ");   
                             }   
                             inBr.close();   
                             in.close();   
@@ -210,20 +210,20 @@ public class WinMain {
                             // e.printStackTrace();   
                         }
                         
-                    } // if( fileName.endsWith("xml") ) // Ñ¡ÖĞµÄÈ·ÊµÊÇxmlÎÄ¼ş
+                    } // if( fileName.endsWith("xml") ) // é€‰ä¸­çš„ç¡®å®æ˜¯xmlæ–‡ä»¶
                     else
                     {
-                        // Ñ¡ÖĞµÄ²¢²»ÊÇ xml ÎÄ¼ş£¬µ¯³ö¶Ô»°¿òÌáÊ¾ÓÃ»§
+                        // é€‰ä¸­çš„å¹¶ä¸æ˜¯ xml æ–‡ä»¶ï¼Œå¼¹å‡ºå¯¹è¯æ¡†æç¤ºç”¨æˆ·
                         JOptionPane.showMessageDialog(mainFrame, 
-                                file.getName() + " ²»ÊÇ .xmlÎÄ¼ş£¬Ptolemy IIÎŞ·¨´ò¿ª´ËÎÄ¼ş£¬ÇëÖØĞÂÑ¡Ôñ£¡", 
-                                "´íÎóµÄÎÄ¼şÀàĞÍ", 
+                                file.getName() + " ä¸æ˜¯ .xmlæ–‡ä»¶ï¼ŒPtolemy IIæ— æ³•æ‰“å¼€æ­¤æ–‡ä»¶ï¼Œè¯·é‡æ–°é€‰æ‹©ï¼", 
+                                "é”™è¯¯çš„æ–‡ä»¶ç±»å‹", 
                                 JOptionPane.ERROR_MESSAGE);
                     }
 
                 } // if( iResult == JFileChooser.APPROVE_OPTION )
                 else
                 {
-                    // ÓÃ»§Ã»ÓĞµã»÷È·¶¨°´Å¥£¬do nothing
+                    // ç”¨æˆ·æ²¡æœ‰ç‚¹å‡»ç¡®å®šæŒ‰é’®ï¼Œdo nothing
                 }
                 // return;
             }
@@ -235,37 +235,37 @@ public class WinMain {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 
-        new WinMain(); // ´´½¨³öÖ÷´°¿Ú
+        new WinMain(); // åˆ›å»ºå‡ºä¸»çª—å£
 
-        // ÔÚÕâ¸öÖ÷º¯ÊıÀï£¬²âÊÔÄÜ·ñ¶¯Ì¬Ïò mainTabbedPaneÌí¼ÓĞÂµÄÑ¡Ïî¿¨
+        // åœ¨è¿™ä¸ªä¸»å‡½æ•°é‡Œï¼Œæµ‹è¯•èƒ½å¦åŠ¨æ€å‘ mainTabbedPaneæ·»åŠ æ–°çš„é€‰é¡¹å¡
 
         JPanel panel_1 = new JPanel();       
-        mainTabbedPane.addTab("ÓÉÖ÷º¯ÊıÌí¼Ó",panel_1); 
+        mainTabbedPane.addTab("ç”±ä¸»å‡½æ•°æ·»åŠ ",panel_1); 
         mainTabbedPane.setEnabledAt(1,true);
-        // ¾­²âÊÔ£¬ÉÏÃæ´úÂëÊÇOKµÄ£¬Ò²¾ÍÊÇ¿ÉÒÔÔÚÖ÷º¯ÊıÖĞ¶¯Ì¬Ìí¼ÓÑ¡Ïî¿¨Ãæ°å
+        // ç»æµ‹è¯•ï¼Œä¸Šé¢ä»£ç æ˜¯OKçš„ï¼Œä¹Ÿå°±æ˜¯å¯ä»¥åœ¨ä¸»å‡½æ•°ä¸­åŠ¨æ€æ·»åŠ é€‰é¡¹å¡é¢æ¿
 
         
-        // ÏÂÃæ¿ªÊ¼²âÊÔÌí¼Ó2¸öÒÔÉÏµÄPlotÃæ°å£¬¿ÉÄÜÓĞºÜ´óµÄÎÊÌâ
+        // ä¸‹é¢å¼€å§‹æµ‹è¯•æ·»åŠ 2ä¸ªä»¥ä¸Šçš„Ploté¢æ¿ï¼Œå¯èƒ½æœ‰å¾ˆå¤§çš„é—®é¢˜
 
         JPanel panelPlot = new JPanel();
         panelPlot.setLayout(new BorderLayout());
         Plot testPlot = new Plot();
         panelPlot.add(testPlot, BorderLayout.CENTER);
         
-        //ÏÂÃæÕâÁ½¾äÒª·ÅÔÚaddtabÇ°--zh
+        //ä¸‹é¢è¿™ä¸¤å¥è¦æ”¾åœ¨addtabå‰--zh
         
-        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // ÓĞĞ§£¬ÒÔÏñËØÎªµ¥Î»£¬È·¶¨»­Í¼ÇøÓòµÄ·¶Î§
-        testPlot.setButtons(true);// ÓĞĞ§£¬·Ç³£ÖØÒª
+        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // æœ‰æ•ˆï¼Œä»¥åƒç´ ä¸ºå•ä½ï¼Œç¡®å®šç”»å›¾åŒºåŸŸçš„èŒƒå›´
+        testPlot.setButtons(true);// æœ‰æ•ˆï¼Œéå¸¸é‡è¦
         
-        mainTabbedPane.addTab("»­Í¼²âÊÔÃæ°å", panelPlot);
+        mainTabbedPane.addTab("ç”»å›¾æµ‹è¯•é¢æ¿", panelPlot);
         mainTabbedPane.setEnabledAt(2,true);      
 
         // mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
         
-        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // Ã»ÓĞĞ§¹û
-        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // ÓĞĞ§
+        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // æ²¡æœ‰æ•ˆæœ
+        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // æœ‰æ•ˆ
 
-        testPlot.addPoint(1, 0.4, 0.5, true); // ÎŞĞ§£¬ÓĞ´ıÑĞ¾¿
+        testPlot.addPoint(1, 0.4, 0.5, true); // æ— æ•ˆï¼Œæœ‰å¾…ç ”ç©¶
         testPlot.addPoint(1, 0.9, 10, true);
         testPlot.addPoint(0, 1.0, 15, true);
         testPlot.addPoint(0, 1.5, -6.0, true);
@@ -275,19 +275,19 @@ public class WinMain {
         JPanel panelPlot1 = new JPanel();
         Plot testPlot1 = new Plot();
         panelPlot1.add(testPlot1);
-        testPlot1.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // ÓĞĞ§£¬ÒÔÏñËØÎªµ¥Î»£¬È·¶¨»­Í¼ÇøÓòµÄ·¶Î§
-        testPlot1.setButtons(true);// ÓĞĞ§£¬·Ç³£ÖØÒª
-        mainTabbedPane.addTab("»­Í¼²âÊÔÃæ°å1", panelPlot1);
+        testPlot1.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // æœ‰æ•ˆï¼Œä»¥åƒç´ ä¸ºå•ä½ï¼Œç¡®å®šç”»å›¾åŒºåŸŸçš„èŒƒå›´
+        testPlot1.setButtons(true);// æœ‰æ•ˆï¼Œéå¸¸é‡è¦
+        mainTabbedPane.addTab("ç”»å›¾æµ‹è¯•é¢æ¿1", panelPlot1);
         mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);  
-        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // Ã»ÓĞĞ§¹û
-        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // ÓĞĞ§
+        // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // æ²¡æœ‰æ•ˆæœ
+        // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // æœ‰æ•ˆ
 
-        testPlot1.addPoint(1, 0.4, 0.5, true); // ÎŞĞ§£¬ÓĞ´ıÑĞ¾¿
+        testPlot1.addPoint(1, 0.4, 0.5, true); // æ— æ•ˆï¼Œæœ‰å¾…ç ”ç©¶
         testPlot1.addPoint(1, 0.9, 10, true);
         testPlot1.addPoint(1, 1.0, 15, true);
         testPlot1.fillPlot();       
 
-        // ¿ªÆô·şÎñÆ÷³ÌĞò£¬µÈ´ı¿Í»§¶ËµÄ·ÂÕæÊı¾İ
+        // å¼€å¯æœåŠ¡å™¨ç¨‹åºï¼Œç­‰å¾…å®¢æˆ·ç«¯çš„ä»¿çœŸæ•°æ®
         ServerSocket server;
         Socket socket;
         String str_tem;
@@ -298,61 +298,61 @@ public class WinMain {
 
         try
         {
-            server = new ServerSocket(6666); // ÔÚ¶Ë¿Ú6666ÉÏ´´½¨·şÎñÆ÷Socket¶ÔÏó
+            server = new ServerSocket(6666); // åœ¨ç«¯å£6666ä¸Šåˆ›å»ºæœåŠ¡å™¨Socketå¯¹è±¡
 
             /****************** 
-             * ÏÂÃæwhileÑ­»·´úÂë¾­¹ı²âÊÔÊÇOKµÄ£¬¿ÉÒÔ½ÓÊÜ¶à´Îµ¥¶ÀµÄsocket¿Í»§¶ËÁ¬½Ó·¢ËÍµÄÏûÏ¢
+             * ä¸‹é¢whileå¾ªç¯ä»£ç ç»è¿‡æµ‹è¯•æ˜¯OKçš„ï¼Œå¯ä»¥æ¥å—å¤šæ¬¡å•ç‹¬çš„socketå®¢æˆ·ç«¯è¿æ¥å‘é€çš„æ¶ˆæ¯
              * **********************************/
             while(true)
             {
-                socket = server.accept(); /*ÖÁ´Ë£¬µ÷ÓÃ¸Ã·½·¨µÄ·şÎñÆ÷½ø³Ì×èÈû£¬Ö±µ½ÊÕµ½¿Í»§¶ËµÄÇëÇó£»
-                    µ±¿Í»§¶ËÔÚ6666¶Ë¿ÚÓĞÇëÇóÊ±£¬·şÎñÆ÷SocketºÍ¿Í»§¶ËµÄSocket½«°ó¶¨ÆğÀ´*/
-                System.out.println("·şÎñÆ÷Ready£¡");
+                socket = server.accept(); /*è‡³æ­¤ï¼Œè°ƒç”¨è¯¥æ–¹æ³•çš„æœåŠ¡å™¨è¿›ç¨‹é˜»å¡ï¼Œç›´åˆ°æ”¶åˆ°å®¢æˆ·ç«¯çš„è¯·æ±‚ï¼›
+                    å½“å®¢æˆ·ç«¯åœ¨6666ç«¯å£æœ‰è¯·æ±‚æ—¶ï¼ŒæœåŠ¡å™¨Socketå’Œå®¢æˆ·ç«¯çš„Socketå°†ç»‘å®šèµ·æ¥*/
+                System.out.println("æœåŠ¡å™¨Readyï¼");
 
-                //»ñµÃ¶ÔÓ¦SocketµÄÊäÈëÊä³öÁ÷
+                //è·å¾—å¯¹åº”Socketçš„è¾“å…¥è¾“å‡ºæµ
                 fIn = socket.getInputStream();
                 // fOut = socket.getOutputStream();
 
-                //ÏÂÃæ½¨Á¢Êı¾İÁ÷
+                //ä¸‹é¢å»ºç«‹æ•°æ®æµ
                 bfreader = new BufferedReader(new InputStreamReader(fIn));
                 //ps = new PrintStream(fOut);
                 //BufferedReader UserIn = new BufferedReader(new InputStreamReader(System.in));
-                System.out.println("µÈ´ı¿Í»§¶ËÏûÏ¢...");
-                str_tem = bfreader.readLine(); // ¶Á¿Í»§¶Ë´«ËÍµÄ×Ö·û´®
-                System.out.println("¿Í»§¶Ë£º" + str_tem); // ÏÔÊ¾×Ö·û´®    
+                System.out.println("ç­‰å¾…å®¢æˆ·ç«¯æ¶ˆæ¯...");
+                str_tem = bfreader.readLine(); // è¯»å®¢æˆ·ç«¯ä¼ é€çš„å­—ç¬¦ä¸²
+                System.out.println("å®¢æˆ·ç«¯ï¼š" + str_tem); // æ˜¾ç¤ºå­—ç¬¦ä¸²    
 
-                // ÏÂÃæ¿ªÊ¼ÖØµã£¬½â¶Á¿Í»§¶Ë·¢ËÍµÄÊı¾İ×Ö·û´®£¬´ÓÖĞ¶ÁÈ¡³ö: 
-                // £¨1£©Êı¾İ¼¯µÄ±à´Î£¬¼´±í´ï¿Í»§¶ËµÚ¼¸´ÎÏë·şÎñÆ÷·¢ËÍÊı¾İ¼¯
-                // £¨2£©·ÂÕæÊ±¼ä
-                // £¨3£©¸÷¸ö±äÁ¿µÄÊı¾İµã
-                // ¿Í»§¶Ë·¢ËÍµÄÏûÏ¢¸ñÊ½ÈçÏÂ¡ª¡ª
-                // <±à´Î-·ÂÕæÊ±¼ä-(±äÁ¿Ãû³Æ1,ÊıÖµ1)-(±äÁ¿Ãû³Æ2,ÊıÖµ2)-(±äÁ¿Ãû³Æ3,ÊıÖµ3)-...-(±äÁ¿Ãû³Æn,ÊıÖµn)>
+                // ä¸‹é¢å¼€å§‹é‡ç‚¹ï¼Œè§£è¯»å®¢æˆ·ç«¯å‘é€çš„æ•°æ®å­—ç¬¦ä¸²ï¼Œä»ä¸­è¯»å–å‡º: 
+                // ï¼ˆ1ï¼‰æ•°æ®é›†çš„ç¼–æ¬¡ï¼Œå³è¡¨è¾¾å®¢æˆ·ç«¯ç¬¬å‡ æ¬¡æƒ³æœåŠ¡å™¨å‘é€æ•°æ®é›†
+                // ï¼ˆ2ï¼‰ä»¿çœŸæ—¶é—´
+                // ï¼ˆ3ï¼‰å„ä¸ªå˜é‡çš„æ•°æ®ç‚¹
+                // å®¢æˆ·ç«¯å‘é€çš„æ¶ˆæ¯æ ¼å¼å¦‚ä¸‹â€”â€”
+                // <ç¼–æ¬¡-ä»¿çœŸæ—¶é—´-(å˜é‡åç§°1,æ•°å€¼1)-(å˜é‡åç§°2,æ•°å€¼2)-(å˜é‡åç§°3,æ•°å€¼3)-...-(å˜é‡åç§°n,æ•°å€¼n)>
                 String str_dataset = str_tem.trim();
 
                 _handleSocketMessage(str_dataset);                  
 
-                // ¹Ø±ÕÕâ´ÎsocketÁ¬½Ó
+                // å…³é—­è¿™æ¬¡socketè¿æ¥
                 bfreader.close();
                 //ps.close();
                 fIn.close();
                 //fOut.close();
                 socket.close();
-                /* £¡£¡£¡£¡£¡£¡ÕâÀïÖµµÃ×¢Òâ£¬ServerSocket¡ª¡ªserver ²¢Ã»ÓĞ±»¹Ø±Õ£¡£¡£¡£¡£¡£¡ */
+                /* ï¼ï¼ï¼ï¼ï¼ï¼è¿™é‡Œå€¼å¾—æ³¨æ„ï¼ŒServerSocketâ€”â€”server å¹¶æ²¡æœ‰è¢«å…³é—­ï¼ï¼ï¼ï¼ï¼ï¼ */
 
                 if( str_tem == "close" ) 
                 { 
-                    // ÏóÕ÷ĞÔµØ¸ø³öÒ»¸öberak·ÖÖ§Óï¾ä£¬¿ÉÄÜÔÚÈí¼şºóÆÚ¿ª·¢ÖĞÓĞÓÃ´¦£¬±ÈÈçpt»òÕßmatlab¿ÉÒÔ·¢ËÍÕâ¸ö¡°close¡±ÏûÏ¢¸ø
-                    // ½çÃæ£¬ÒÔÍ¨Öª½çÃæ¹Ø±ÕSocket·şÎñ½ø³Ì£¬²¢ÇÒ¿ÉÒÔÇå³ı½çÃæÖĞËùÓĞµÄ·ÂÕæĞÅÏ¢
+                    // è±¡å¾æ€§åœ°ç»™å‡ºä¸€ä¸ªberakåˆ†æ”¯è¯­å¥ï¼Œå¯èƒ½åœ¨è½¯ä»¶åæœŸå¼€å‘ä¸­æœ‰ç”¨å¤„ï¼Œæ¯”å¦‚ptæˆ–è€…matlabå¯ä»¥å‘é€è¿™ä¸ªâ€œcloseâ€æ¶ˆæ¯ç»™
+                    // ç•Œé¢ï¼Œä»¥é€šçŸ¥ç•Œé¢å…³é—­SocketæœåŠ¡è¿›ç¨‹ï¼Œå¹¶ä¸”å¯ä»¥æ¸…é™¤ç•Œé¢ä¸­æ‰€æœ‰çš„ä»¿çœŸä¿¡æ¯
                     break; 
                 }
             } // while(true)
 
-            server.close(); // ¹Ø±Õ·şÎñÆ÷¶ËµÄsocket·şÎñ¡£
+            server.close(); // å…³é—­æœåŠ¡å™¨ç«¯çš„socketæœåŠ¡ã€‚
 
         }
         catch(Exception e)
         {
-            System.out.println("Òì³£ÊÇ£º" + e);
+            System.out.println("å¼‚å¸¸æ˜¯ï¼š" + e);
         }
 
         return; // main return
@@ -364,38 +364,38 @@ public class WinMain {
      *******************   private methods *************************/
     static private void _handleSocketMessage(String socketMessage)
     {
-        // ÏÂÃæ¿ªÊ¼ÖØµã£¬½â¶Á¿Í»§¶Ë·¢ËÍµÄÊı¾İ×Ö·û´®£¬´ÓÖĞ¶ÁÈ¡³ö: 
-        // £¨1£©Êı¾İ¼¯µÄ±à´Î£¬¼´±í´ï¿Í»§¶ËµÚ¼¸´ÎÏë·şÎñÆ÷·¢ËÍÊı¾İ¼¯
-        // £¨2£©·ÂÕæÊ±¼ä
-        // £¨3£©¸÷¸ö±äÁ¿µÄÊı¾İµã
-        // ¿Í»§¶Ë·¢ËÍµÄÏûÏ¢¸ñÊ½ÈçÏÂ¡ª¡ª
-        // <±à´Î-·ÂÕæÊ±¼ä-(±äÁ¿Ãû³Æ1,ÊıÖµ1)-(±äÁ¿Ãû³Æ2,ÊıÖµ2)-(±äÁ¿Ãû³Æ3,ÊıÖµ3)-...-(±äÁ¿Ãû³Æn,ÊıÖµn)>
+        // ä¸‹é¢å¼€å§‹é‡ç‚¹ï¼Œè§£è¯»å®¢æˆ·ç«¯å‘é€çš„æ•°æ®å­—ç¬¦ä¸²ï¼Œä»ä¸­è¯»å–å‡º: 
+        // ï¼ˆ1ï¼‰æ•°æ®é›†çš„ç¼–æ¬¡ï¼Œå³è¡¨è¾¾å®¢æˆ·ç«¯ç¬¬å‡ æ¬¡æƒ³æœåŠ¡å™¨å‘é€æ•°æ®é›†
+        // ï¼ˆ2ï¼‰ä»¿çœŸæ—¶é—´
+        // ï¼ˆ3ï¼‰å„ä¸ªå˜é‡çš„æ•°æ®ç‚¹
+        // å®¢æˆ·ç«¯å‘é€çš„æ¶ˆæ¯æ ¼å¼å¦‚ä¸‹â€”â€”
+        // <ç¼–æ¬¡-ä»¿çœŸæ—¶é—´-(å˜é‡åç§°1,æ•°å€¼1)-(å˜é‡åç§°2,æ•°å€¼2)-(å˜é‡åç§°3,æ•°å€¼3)-...-(å˜é‡åç§°n,æ•°å€¼n)>
 
-        // ÏÈ½øĞĞ²ÎÊı¼ì²é
+        // å…ˆè¿›è¡Œå‚æ•°æ£€æŸ¥
         if( socketMessage == null || socketMessage.isEmpty() )
         {
             return;
         }
-        //´ÖÂÔ¼ì²éÒ»ÏÂ¿Í»§¶ËSocketÏûÏ¢µÄ¸ñÊ½ÊÇ·ñÕıÈ·£¬ if³ÉÁ¢ËµÃ÷ÏûÏ¢ÒÔ"<"¿ªÍ·ÇÒÒÔ">"½áÎ²
+        //ç²—ç•¥æ£€æŸ¥ä¸€ä¸‹å®¢æˆ·ç«¯Socketæ¶ˆæ¯çš„æ ¼å¼æ˜¯å¦æ­£ç¡®ï¼Œ ifæˆç«‹è¯´æ˜æ¶ˆæ¯ä»¥"<"å¼€å¤´ä¸”ä»¥">"ç»“å°¾
         if( socketMessage.endsWith(">") && socketMessage.startsWith("<") )
         {
             int iLoopCount = _get_loop_count(socketMessage);
-            if( iLoopCount >= 1 ) // socketÏûÏ¢µÄÊı¾İ¼¯Ñ­»·´ÎÊıºÏ·¨
+            if( iLoopCount >= 1 ) // socketæ¶ˆæ¯çš„æ•°æ®é›†å¾ªç¯æ¬¡æ•°åˆæ³•
             {
-                if( iLoopCount == 1 ) // µµ´Î·ÂÕæ¹ı³Ì·¢ËÍµÄµÚÒ»ÌõsocketÏûÏ¢
+                if( iLoopCount == 1 ) // æ¡£æ¬¡ä»¿çœŸè¿‡ç¨‹å‘é€çš„ç¬¬ä¸€æ¡socketæ¶ˆæ¯
                 {
-                    // ÏÂÃæ¿ªÊ¼×öÒ»Ğ©³õÊ¼»¯µÄ¹¤×÷
-                    _clearOldSimulation(); // Çå³ı¾ÉµÄ·ÂÕæĞÅÏ¢
+                    // ä¸‹é¢å¼€å§‹åšä¸€äº›åˆå§‹åŒ–çš„å·¥ä½œ
+                    _clearOldSimulation(); // æ¸…é™¤æ—§çš„ä»¿çœŸä¿¡æ¯
 
                     _aryListVariableName = _getPointNameAryList(socketMessage);
 
                     if( _aryListVariableName.isEmpty() || _aryListVariableName == null)
                     {
-                        // µ¯³ö´íÎó¶Ô»°¿ò
+                        // å¼¹å‡ºé”™è¯¯å¯¹è¯æ¡†
                         JOptionPane.showInternalMessageDialog(mainFrame, 
-                                "ĞÂµÄ·ÂÕæ³ÌĞòÃ»ÓĞ¿É¼ì²âµÄ±äÁ¿£¬Çë¼ì²éÄãµÄ·ÂÕæÄ£ĞÍ£¡", 
-                                "´íÎó£¡ÎŞ·ÂÕæ±äÁ¿¹©¼ì²â£¡", JOptionPane.ERROR_MESSAGE);
-                        return; // ½áÊøÕâ´ÎÏûÏ¢´¦Àí
+                                "æ–°çš„ä»¿çœŸç¨‹åºæ²¡æœ‰å¯æ£€æµ‹çš„å˜é‡ï¼Œè¯·æ£€æŸ¥ä½ çš„ä»¿çœŸæ¨¡å‹ï¼", 
+                                "é”™è¯¯ï¼æ— ä»¿çœŸå˜é‡ä¾›æ£€æµ‹ï¼", JOptionPane.ERROR_MESSAGE);
+                        return; // ç»“æŸè¿™æ¬¡æ¶ˆæ¯å¤„ç†
                     }
                     else
                     {
@@ -403,9 +403,9 @@ public class WinMain {
                     }
                 }
             }
-            else // socketÏûÏ¢µÄÊı¾İ¼¯Ñ­»·´ÎÊı²»ºÏ·¨
+            else // socketæ¶ˆæ¯çš„æ•°æ®é›†å¾ªç¯æ¬¡æ•°ä¸åˆæ³•
             {
-                //Êı¾İ³öÏÖÒì³££¬¿ÉÒÔ¿¼ÂÇÒÔÉú³ÉÈÕÖ¾ÎÄ¼şµÄĞÎÊ½À´ÅÅ²é´íÎó
+                //æ•°æ®å‡ºç°å¼‚å¸¸ï¼Œå¯ä»¥è€ƒè™‘ä»¥ç”Ÿæˆæ—¥å¿—æ–‡ä»¶çš„å½¢å¼æ¥æ’æŸ¥é”™è¯¯
                 return;
             }
             ArrayList AryList_pointName = null;
@@ -417,34 +417,34 @@ public class WinMain {
     {
         if( _aryListVariableName != null || !_aryListVariableName.isEmpty() )
         {
-            // ËµÃ÷Õâ´Î·ÂÕæÖ®Ç°£¬ÒÑ¾­´æÔÚ·ÂÕæ½ø³Ì,Çå¿ÕËùÓĞ·ÂÕæ±äÁ¿µÄPlotÃæ°å
+            // è¯´æ˜è¿™æ¬¡ä»¿çœŸä¹‹å‰ï¼Œå·²ç»å­˜åœ¨ä»¿çœŸè¿›ç¨‹,æ¸…ç©ºæ‰€æœ‰ä»¿çœŸå˜é‡çš„Ploté¢æ¿
         }
 
     }
     
     static private void _startNewSimulationInVergil(String startVergilcmd)
     {
-        Runtime run = Runtime.getRuntime(); //Æô¶¯ÓëÓ¦ÓÃ³ÌĞòÏà¹ØµÄÔËĞĞÊ±¶ÔÏó
-        // ÕâÀïÒÑ¾­ÊÔ¹ı£¬±ØĞëÊ¹ÓÃtry-catch½á¹¹²ÅĞĞ
+        Runtime run = Runtime.getRuntime(); //å¯åŠ¨ä¸åº”ç”¨ç¨‹åºç›¸å…³çš„è¿è¡Œæ—¶å¯¹è±¡
+        // è¿™é‡Œå·²ç»è¯•è¿‡ï¼Œå¿…é¡»ä½¿ç”¨try-catchç»“æ„æ‰è¡Œ
         try {   
-            Process p = run.exec(startVergilcmd);// Æô¶¯ÁíÒ»¸ö½ø³ÌÀ´Ö´ĞĞ Ö¸¶¨µÄÏµÍ³ ÃüÁî   
+            Process p = run.exec(startVergilcmd);// å¯åŠ¨å¦ä¸€ä¸ªè¿›ç¨‹æ¥æ‰§è¡Œ æŒ‡å®šçš„ç³»ç»Ÿ å‘½ä»¤   
             BufferedInputStream in = new BufferedInputStream(p.getInputStream());   
             BufferedReader inBr = new BufferedReader(new InputStreamReader(in));   
             String lineStr;   
             while ((lineStr = inBr.readLine()) != null)   
-                //»ñµÃÃüÁîÖ´ĞĞºóÔÚ¿ØÖÆÌ¨µÄÊä³öĞÅÏ¢   
-                // ¿ØÖÆÌ¨ÓĞÊä³öĞÅÏ¢£¬ÄÇËµÃ÷±¾»úÃ»ÓĞ°²×°ºÃPtolemy II»òÕßÃ»ÓĞÎªPtolemy IIÉèÖÃºÃ»·¾³±äÁ¿
+                //è·å¾—å‘½ä»¤æ‰§è¡Œååœ¨æ§åˆ¶å°çš„è¾“å‡ºä¿¡æ¯   
+                // æ§åˆ¶å°æœ‰è¾“å‡ºä¿¡æ¯ï¼Œé‚£è¯´æ˜æœ¬æœºæ²¡æœ‰å®‰è£…å¥½Ptolemy IIæˆ–è€…æ²¡æœ‰ä¸ºPtolemy IIè®¾ç½®å¥½ç¯å¢ƒå˜é‡
 
-                System.out.println(lineStr);// ´òÓ¡Êä³öĞÅÏ¢   
-            //¼ì²éÃüÁîÊÇ·ñÖ´ĞĞÊ§°Ü¡£   
+                System.out.println(lineStr);// æ‰“å°è¾“å‡ºä¿¡æ¯   
+            //æ£€æŸ¥å‘½ä»¤æ˜¯å¦æ‰§è¡Œå¤±è´¥ã€‚   
             if (p.waitFor() != 0) {   
-                if (p.exitValue() == 1)//p.exitValue()==0±íÊ¾Õı³£½áÊø£¬1£º·ÇÕı³£½áÊø 
+                if (p.exitValue() == 1)//p.exitValue()==0è¡¨ç¤ºæ­£å¸¸ç»“æŸï¼Œ1ï¼šéæ­£å¸¸ç»“æŸ 
                     JOptionPane.showMessageDialog(mainFrame, 
-                            lineStr + "!" + "³öÏÖÕâÖÖ´íÎó£¬ÓĞÁ½ÖÖ¿ÉÄÜ£º£¨1£©±¾»úÃ»ÓĞ°²×°Ptomely II£»\n;"
-                                    + "£¨2£©±¾»úÒÑÕıÈ·°²×°ÁËPtolemy II£¬µ«ÊÇÃ»ÓĞÎªÆäÉèÖÃºÃÏµÍ³»·¾³±äÁ¿", 
-                                    "ÎŞ·¨Æô¶¯Vergil", 
+                            lineStr + "!" + "å‡ºç°è¿™ç§é”™è¯¯ï¼Œæœ‰ä¸¤ç§å¯èƒ½ï¼šï¼ˆ1ï¼‰æœ¬æœºæ²¡æœ‰å®‰è£…Ptomely IIï¼›\n;"
+                                    + "ï¼ˆ2ï¼‰æœ¬æœºå·²æ­£ç¡®å®‰è£…äº†Ptolemy IIï¼Œä½†æ˜¯æ²¡æœ‰ä¸ºå…¶è®¾ç½®å¥½ç³»ç»Ÿç¯å¢ƒå˜é‡", 
+                                    "æ— æ³•å¯åŠ¨Vergil", 
                                     JOptionPane.ERROR_MESSAGE);
-                System.err.println("ÃüÁîÖ´ĞĞÊ§°Ü!  ");   
+                System.err.println("å‘½ä»¤æ‰§è¡Œå¤±è´¥!  ");   
             }   
             inBr.close();   
             in.close();   
