@@ -1,6 +1,7 @@
 package winSurface;
 import javax.swing.*;
 
+import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -11,8 +12,7 @@ import ptolemy.plot.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import java.util.*; // java数据结构的包，用到其中的 arrayList
+import java.util.*; // java数据结构的包，用到其中的 ArrayList
 
 public class WinMain {
 
@@ -32,19 +32,55 @@ public class WinMain {
     JMenu menuTool = null;
     JMenu menuHelp = null;
 
+    // 这里考虑后续的扩展需求，暂时将这两个成员变量保留
     static ArrayList _aryListVariableName = null; // 用来记录一次仿真过程，涉及到的全部变量名称
+    static ArrayList _aryListVariableValue = null; // 用来记录一次仿真过程，涉及到的所有变量的值
+    
+    static ArrayList _aryListDataSets = null; // 用来存放数据点
+    // 这个 _aryListDataSets 变量稍显复杂，它的里面每个元素都是ArrayList类型，_aryListDataSets中单个ArrayList元素
+    // 又分别存放了两个ArrayList元素（分别用来存放一个数据集的变量名称集合和仿真数值集合），举个例子来说，一个 _aryListDataSets 的数据组成可能是下面的内容：
+    //
+    //  _aryListDataSets(ArrayList类型)
+    //     |--(ArrayList类型元素)
+    //     |       |--(ArrayList类型元素)
+    //     |       |       |--[Ppv],[V],[V1]  .....里面存放了3个String类型变量，这是变量的名称
+    //     |       |--(ArrayList类型元素)
+    //     |               |--[8.9],[1.23],[9.876]  .....里面存放了3个double类型数值，和上面的3个String类型相对应，这是变量的仿真数值
+    //     |--(ArrayList类型元素)
+    //     |       |--(ArrayList类型元素)
+    //     |       |       |--[I1],[I2]   ..... 里面存放了2个String类型的变量名称
+    //     |       |--(ArrayList类型元素)
+    //     |               |--[0.78],[1.482]  ..... 里面存放了2个double类型的仿真数值
+    //     |--(ArrayList类型元素)
+    //             |--(ArrayList类型元素)
+    //             |       |--[SOC]
+    //             |--(ArrayList类型元素)
+    //                     |--[0.845]
+    
+    static int _iPlotNumber = 0; // 用来记录当前仿真程序共产生了几个Plot选项卡面板
+    
     static ArrayList _aryListTabbedPanel = null; // 用来存放选项卡的动态数组
     static ArrayList _aryListPlotPanel = null; // 用来存放每个选项卡中的Plot画图面板
     static boolean _bSimulationBegin = false; // 用来指示当前时间，界面是否有仿真在运行
+    
+    static int _iLoopCount = 0;
 
 
     public WinMain()
     {
         // 类成员变量的初始化
         _aryListVariableName = new ArrayList();
+        _aryListVariableValue = new ArrayList();
+        
+        _aryListDataSets = new ArrayList();
+        
+        _iPlotNumber = 0;
+        
         _aryListTabbedPanel = new ArrayList();
         _aryListPlotPanel = new ArrayList();
         _bSimulationBegin = false;
+        
+        _iLoopCount = 0;
 
 
         // 下面开始创建出界面窗口，并在窗口中添加好各个菜单项
@@ -171,8 +207,16 @@ public class WinMain {
                                     JOptionPane.YES_NO_OPTION);
                             if( iStartNewSim == JOptionPane.YES_OPTION )
                             {
-                                // 清楚当前仿真的所有选项卡以及相关信息
-                                // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）                      
+                                // 清除当前仿真的所有选项卡以及相关信息
+                                // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）
+                                
+                                // 修改 _bSimulationBegin 的值，表示可以开启新的仿真
+                                _bSimulationBegin = false;
+                                
+                                /******************  ！！！！！！！！！！！！！！！！！！！！！！！
+                                 * ！！！！！！这里有个难题，如何关闭已经运行的pt和matlab，！！！！！！！！！！！！！
+                                 * 如果不能关闭旧的pt和matlab程序，新开启的仿真程序，可能在socket消息发送上受到就程序发送的消息的干扰
+                                 * *****************/
                             }
                             else
                             {
@@ -180,35 +224,8 @@ public class WinMain {
                             }                            
                         } //  if( _bSimulationBegin == true )
 
-                        // _startNewSimulationInVergil(startVergilcmd);
-                        Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
-                        // 这里已经试过，必须使用try-catch结构才行
-                        try {   
-                            Process p = run.exec(startVergilcmd);// 启动另一个进程来执行 指定的系统 命令   
-                            BufferedInputStream in = new BufferedInputStream(p.getInputStream());   
-                            BufferedReader inBr = new BufferedReader(new InputStreamReader(in));   
-                            String lineStr;   
-                            while ((lineStr = inBr.readLine()) != null)   
-                                //获得命令执行后在控制台的输出信息   
-                                // 控制台有输出信息，那说明本机没有安装好Ptolemy II或者没有为Ptolemy II设置好环境变量
-
-                                System.out.println(lineStr);// 打印输出信息   
-                            //检查命令是否执行失败。   
-                            if (p.waitFor() != 0) {   
-                                if (p.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束 
-                                    JOptionPane.showMessageDialog(mainFrame, 
-                                            lineStr + "!" + "出现这种错误，有两种可能：（1）本机没有安装Ptomely II；\n;"
-                                                    + "（2）本机已正确安装了Ptolemy II，但是没有为其设置好系统环境变量", 
-                                                    "无法启动Vergil", 
-                                                    JOptionPane.ERROR_MESSAGE);
-                                System.err.println("命令执行失败!  ");   
-                            }   
-                            inBr.close();   
-                            in.close();   
-                        } 
-                        catch (Exception e) {   
-                            // e.printStackTrace();   
-                        }
+                        _startNewSimulationInVergil(startVergilcmd);
+                        
                         
                     } // if( fileName.endsWith("xml") ) // 选中的确实是xml文件
                     else
@@ -245,12 +262,17 @@ public class WinMain {
         // 经测试，上面代码是OK的，也就是可以在主函数中动态添加选项卡面板
 
         
-        // 下面开始测试添加2个以上的Plot面板，可能有很大的问题
+        /*// 下面开始测试添加2个以上的Plot面板，可能有很大的问题
 
         JPanel panelPlot = new JPanel();
         panelPlot.setLayout(new BorderLayout());
         Plot testPlot = new Plot();
         panelPlot.add(testPlot, BorderLayout.CENTER);
+        
+        //下面这两句要放在addtab前--zh
+        
+        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
+        testPlot.setButtons(true);// 有效，非常重要
         
         mainTabbedPane.addTab("画图测试面板", panelPlot);
         mainTabbedPane.setEnabledAt(2,true);
@@ -258,8 +280,7 @@ public class WinMain {
         
         // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // 没有效果
         // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // 有效
-        testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
-        testPlot.setButtons(true);// 有效，非常重要
+        
         testPlot.addPoint(1, 0.4, 0.5, true); // 无效，有待研究
         testPlot.addPoint(1, 0.9, 10, true);
         testPlot.addPoint(0, 1.0, 15, true);
@@ -267,20 +288,25 @@ public class WinMain {
         testPlot.fillPlot();
 
 
-        /*JPanel panelPlot1 = new JPanel();
+        JPanel panelPlot1 = new JPanel();
+        
+        Plot testPlot1 = new Plot();
+        panelPlot1.add(testPlot1);
+        
+        testPlot1.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
+        testPlot1.setButtons(true);// 有效，非常重要
+        
         mainTabbedPane.addTab("画图测试面板1", panelPlot1);
         mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
 
-        Plot testPlot1 = new Plot();
-        panelPlot1.add(testPlot1);
+        
         // testPlot.setBounds(0, 0, WIN_WIDTH, WIN_HEIGHT); // 没有效果
         // testPlot.setPlotRectangle(new Rectangle(0,0,WIN_WIDTH,WIN_HEIGHT) ); // 有效
-        testPlot1.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
-        testPlot1.setButtons(true);// 有效，非常重要
+        
         testPlot1.addPoint(1, 0.4, 0.5, true); // 无效，有待研究
         testPlot1.addPoint(1, 0.9, 10, true);
         testPlot1.addPoint(1, 1.0, 15, true);
-        testPlot1.fillPlot();   */    
+        testPlot1.fillPlot(); */      
 
         // 开启服务器程序，等待客户端的仿真数据
         ServerSocket server;
@@ -293,7 +319,7 @@ public class WinMain {
 
         try
         {
-            server = new ServerSocket(6666); // 在端口6666上创建服务器Socket对象
+            server = new ServerSocket(4700); // 在端口4700上创建服务器Socket对象
 
             /****************** 
              * 下面while循环代码经过测试是OK的，可以接受多次单独的socket客户端连接发送的消息
@@ -360,42 +386,37 @@ public class WinMain {
     static private void _handleSocketMessage(String socketMessage)
     {
         // 下面开始重点，解读客户端发送的数据字符串，从中读取出: 
-        // （1）数据集的编次，即表达客户端第几次想服务器发送数据集
+        // （1）数据集的编次，即表达客户端第几次向服务器发送数据集
         // （2）仿真时间
         // （3）各个变量的数据点
         // 客户端发送的消息格式如下——
-        // <编次-仿真时间-(变量名称1,数值1)-(变量名称2,数值2)-(变量名称3,数值3)-...-(变量名称n,数值n)>
+        // <仿真循环编次-仿真时间-[(变量1,数值1)-(变量2,数值2)-...-(变量n,数值n)]-[(变量1,数值1)-(变量2,数值2)-...-(变量n,数值n)]-...-[(变量1,数值1)-(变量2,数值2)-...-(变量n,数值n)]>
 
         // 先进行参数检查
         if( socketMessage == null || socketMessage.isEmpty() )
         {
             return;
         }
-        //粗略检查一下客户端Socket消息的格式是否正确， if成立说明消息以"<"开头且以">"结尾
-        if( socketMessage.endsWith(">") && socketMessage.startsWith("<") )
+        
+        // 检查客户端发送来的消息格式是否正确，使用正则表达式检查
+        boolean b = Pattern.matches(
+                "^<[0-9]+\\-[0-9]+\\.?[0-9]*(\\-\\[\\(.+,.+\\)(\\-\\(.+,.+\\))*\\])+>$",
+                socketMessage);
+        if(b == true) // 消息格式正确，可以进行下一步的处理工作
         {
-            int iLoopCount = _get_loop_count(socketMessage);
-            if( iLoopCount >= 1 ) // socket消息的数据集循环次数合法
+            int iLoopCount = _getLoopCount(socketMessage);
+            if( iLoopCount > _iLoopCount ) // socket消息的数据集循环次数合法
             {
-                if( iLoopCount == 1 ) // 档次仿真过程发送的第一条socket消息
+                if( iLoopCount == 1 && _bSimulationBegin == false) 
                 {
-                    // 下面开始做一些初始化的工作
-                    _clearOldSimulation(); // 清除旧的仿真信息
-
-                    _aryListVariableName = _getPointNameAryList(socketMessage);
-
-                    if( _aryListVariableName.isEmpty() || _aryListVariableName == null)
-                    {
-                        // 弹出错误对话框
-                        JOptionPane.showInternalMessageDialog(mainFrame, 
-                                "新的仿真程序没有可检测的变量，请检查你的仿真模型！", 
-                                "错误！无仿真变量供检测！", JOptionPane.ERROR_MESSAGE);
-                        return; // 结束这次消息处理
-                    }
-                    else
-                    {
-
-                    }
+                    // 当次仿真过程发送的第一条socket消息，而且没有仿真程序在执行或者可以开启新的仿真程序
+                    _handleFirstSocket(socketMessage);
+                    
+                }
+                else
+                {
+                    // 处理后续的socket消息，动态解析数据点并添加到plot面板中去即可
+                    _handleNextSocket(socketMessage);
                 }
             }
             else // socket消息的数据集循环次数不合法
@@ -403,18 +424,428 @@ public class WinMain {
                 //数据出现异常，可以考虑以生成日志文件的形式来排查错误
                 return;
             }
-            ArrayList AryList_pointName = null;
-            ArrayList AryList_value = null;
+
         } //  if( socketMessage.endsWith(">") && socketMessage.startsWith("<") )
+    }
+    
+    static private void _handleFirstSocket( String socketMessage)
+    {
+        // 当次仿真过程发送的第一条socket消息，而且没有仿真程序在执行或者可以开启新的仿真程序
+        
+        // 先进行参数检查
+        if(socketMessage.isEmpty())
+        {
+            return;
+        }
+        
+        // 下面开始做一些初始化的工作
+        _clearOldSimulation(); // 清除旧的仿真信息
+     
+        // 获取socket消息中包含的数据点名称和数值，
+        // 这里 保留 _aryListVariableName 和 _aryListVariableValue 两个成员变量，因为考虑到在软件开发后期，
+        // 可以用来对接受到的数据的正确性、合理性进行 检查校验
+        _aryListVariableName = _getPointNameAryList(socketMessage);  // 获取消息中包含的所有变量名称
+        _aryListVariableValue = _getPointValueAryList(socketMessage); // 获取消息中包含的所有变量的数值
+        
+        
+        // 获取socket消息中的数据集
+        ArrayList aryListDataSets = _getDataSets(socketMessage);
+        
+        if( aryListDataSets.isEmpty() || aryListDataSets.isEmpty() )
+        {
+            // 弹出错误对话框
+            JOptionPane.showInternalMessageDialog(mainFrame, 
+                    "新的仿真程序没有检测到变量输出，请检查您的仿真模型！", 
+                    "错误！无仿真变量可供监测！", JOptionPane.ERROR_MESSAGE);
+            return; // 结束这次消息处理
+        }
+        else // if( _aryListVariableName.isEmpty() || _aryListVariableName == null)
+        {
+            // 检测一下获取的数据集是否正确合理
+            if( !_validateDataSet(aryListDataSets, true) )
+            {
+                // 数据集不合法，退出这次消息处理
+                return;
+            }
+
+            // 将第一次socket消息数据集保存到类的静态列表中
+            _aryListDataSets = aryListDataSets;
+            
+            double dSimulationTime = _getSimulationTime(socketMessage);
+
+            // 消息正确，开始针对每个变量数据集，添加好plot画图选项卡
+            for(int i = 0; i < aryListDataSets.size(); ++i)
+            {
+                
+                // 创建出一个Plot面板，以及其依附的JPanel
+                JPanel panelPlot = new JPanel();
+                panelPlot.setLayout(new BorderLayout());
+                Plot testPlot = new Plot();
+                
+                // 将创建好的 panelPlot 和 testPlot 添加到 本类的静态列表中
+                _aryListTabbedPanel.add(panelPlot);
+                _aryListPlotPanel.add(testPlot);
+                
+                ((JPanel)_aryListTabbedPanel.get(i)).add((Plot)_aryListPlotPanel.get(i)
+                        , BorderLayout.CENTER);
+                // testPlot.setSize(WIN_WIDTH-100, WIN_HEIGHT-100); // 有效，以像素为单位，确定画图区域的范围
+                ((Plot)_aryListPlotPanel.get(i)).setButtons(true);// 有效，非常重要
+                
+                
+                
+                String tabTitle = ""; // 由变量名称组成的选项卡标题
+                Vector vcCaption = new Vector(); // 用于存放每个变量的名称，在设置每条曲线的标示时使用
+                
+                ArrayList aryListDataSet = (ArrayList)_aryListDataSets.get(i);
+                ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
+                ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+                for(int k = 0; k < aryListPointName.size(); ++k)
+                {
+                    vcCaption.add( (String)aryListPointName.get(k) );
+                    tabTitle = tabTitle + "," + (String)aryListPointName.get(k);
+                    ((Plot)_aryListPlotPanel.get(i)).addPoint(k, 
+                            dSimulationTime, 
+                            (double)aryListPointValue.get(k), 
+                            true);                   
+                    //
+                }
+                
+                //((Plot)_aryListPlotPanel.get(i)).setCaptions(vcCaption); // 运行结果显示，
+                // 这个函数只是在面板的下部添加了几行标题，并不是针对曲线进行添加，有待改进
+                
+                
+                ((Plot)_aryListPlotPanel.get(i)).fillPlot(); // 重绘图形
+                
+                tabTitle = tabTitle.substring(1, tabTitle.length()); // 去掉第一个变量前的逗号
+                int iTitleLength = tabTitle.length();
+                int iMinTitleLength = 5;
+                if(iTitleLength < iMinTitleLength) // 变量名太短，在后面扩充空格
+                {
+                    for(int n = 0; n < iMinTitleLength - iTitleLength; ++n)
+                    {
+                        tabTitle = tabTitle + " "; 
+                    }
+                }
+                mainTabbedPane.addTab( tabTitle , (JPanel)_aryListTabbedPanel.get(i));
+                _iPlotNumber++;
+                mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
+            }
+            
+            // 更新当前类的静态变量，循环次数变量更新为1
+            _iLoopCount = 1;
+            
+            // 设置已存在仿真进程标志
+            _bSimulationBegin = true;          
+        }
+    }
+    
+    static private void _handleNextSocket(String socketMessage)
+    {
+        // 先进行参数检查
+        if(socketMessage.isEmpty())
+        {
+            return;
+        }
+        
+        // 处理后续的socket消息，动态解析数据点并添加到plot面板中去即可
+        int iLoopCount = _getLoopCount(socketMessage);
+        if( iLoopCount > _iLoopCount ) // 本次socket消息的循环次数合法，是这次仿真的后续循环结果消息
+        {
+            // 获取这次socket消息的数据集
+            ArrayList aryListDataSets = _getDataSets(socketMessage);
+            
+            // 检查数据的合法性，合理时才处理这个消息
+            if( _validateDataSet(aryListDataSets, false) )
+            {
+                // 数据合理，开始向每个Plot面板中添加数据点
+                double dSimulationTime = _getSimulationTime(socketMessage);
+                for(int i = 0; i < aryListDataSets.size(); ++i)
+                {
+                    ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
+                    ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
+                    ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+                    
+                    for(int k = 0; k < aryListPointName.size(); ++k)
+                    {
+                        ((Plot)_aryListPlotPanel.get(i)).addPoint(k, 
+                                dSimulationTime, 
+                                (double)aryListPointValue.get(k), 
+                                true);
+                        
+                        //
+                    }
+                    
+                   ((Plot)_aryListPlotPanel.get(i)).fillPlot(); // 重绘图形
+                }
+                // 更新当前类的静态循环次数变量
+                _iLoopCount = iLoopCount;
+            }          
+        }             
     }
     
     static private void _clearOldSimulation()
     {
-        if( _aryListVariableName != null || !_aryListVariableName.isEmpty() )
+        if( _iPlotNumber > 0 ) // 说明这次仿真之前，已经存在仿真进程,清空所有仿真变量的Plot面板
         {
-            // 说明这次仿真之前，已经存在仿真进程,清空所有仿真变量的Plot面板
+            // 从mainTabbedPane中逆序删除所有Plot选项卡面板
+            for(int i = 0; i < _iPlotNumber; ++i)
+            {
+                mainTabbedPane.remove( mainTabbedPane.getTabCount() - 1 );
+                
+            }
         }
+        
+        // 开始对类的静态变量和列表做清空
+        _iPlotNumber = 0; // 清空plot选项卡数目
+        _aryListTabbedPanel.clear(); // 清空装在Plot面板的JPanel面板数组
+        _aryListPlotPanel.clear(); // 清空Plot面板数组
+        _aryListVariableName.clear(); // 清空变量名列表
+        _aryListVariableValue.clear(); // 清空变量值列表
+        _aryListDataSets.clear(); // 清空数据集列表
+        _bSimulationBegin = false;
+        _iLoopCount = 0;
+    }
+    
 
+    static private int _getLoopCount(String str)
+    {
+        // 先进行参数检查
+        if( str == null || str.isEmpty() )
+        {
+            return -1;
+        }
+        
+        // 开始提取仿真的循环次数，即iteration变量的值
+        int i = str.indexOf('-', 0);
+        String loopCount = str.substring(1, i);
+        
+        int iLoopCount = Integer.valueOf(loopCount);
+        
+        // 测试性输出语句
+        System.out.println("loop count is :" + iLoopCount);
+                
+        return iLoopCount;
+    }
+    static private double _getSimulationTime(String str)
+    {
+        // 先进行参数检查
+        if( str == null || str.isEmpty() )
+        {
+            return -1;
+        }
+        int beginIndex = str.indexOf('-') + 1;
+        int endIndex = str.indexOf('-', beginIndex);
+        if(endIndex == beginIndex) // 表示仿真时间的字符串为空，有异常
+        {
+            // 这里有异常，可以考虑生成日志文件
+            return 0.0;
+        }
+        String strSimuTime = str.substring(beginIndex, endIndex);
+        double dSimuTime = Double.valueOf(strSimuTime);
+        
+        // 测试性输出语句
+        System.out.println("simulation time is : " + dSimuTime);
+        
+        return dSimuTime;
+    }
+    
+    static private ArrayList _getPointNameAryList(String str)
+    {
+        ArrayList aryListVariableName = new ArrayList();
+        // 先进行参数检查
+        if( str == null || str.isEmpty() )
+        {
+            return aryListVariableName;
+        }
+        // 首先清空 aryListVariableName
+        aryListVariableName.clear();
+        int iBeginIndex = str.indexOf('(') + 1; // 找到第一个数据点 名称开始的位置
+        int iEndIndex = 0;
+        
+        while( (iEndIndex = str.indexOf(',', iBeginIndex)) != -1)
+        {
+            String strVariableName = str.substring(iBeginIndex, iEndIndex); // 获取当前点变量名称
+            aryListVariableName.add(strVariableName); // 将这个变量名称放入 aryListVariableName中
+            
+            // 获取下一个点 变量名称的开始位置
+            iBeginIndex = str.indexOf('(', iEndIndex);
+            if( iBeginIndex == -1) // 已经访问了最后一个点，可以退出循环
+            {
+                break;
+            }
+            iBeginIndex = iBeginIndex + 1;
+        }
+        
+        // 测试输出语句
+        for(int i = 0; i < aryListVariableName.size(); ++i)
+        {
+            System.out.println("第" + i + "个变量名称： " + aryListVariableName.get(i));
+        }
+        return aryListVariableName;
+    }
+    
+    static private ArrayList _getPointValueAryList(String str)
+    {
+        ArrayList aryListVariableValue = new ArrayList();
+        // 先进行参数检查
+        if( str == null || str.isEmpty() )
+        {
+            return aryListVariableValue;
+        }
+        
+        // 首先清空 aryListVariableValue
+        aryListVariableValue.clear();
+        
+        int iBeginIndex = str.indexOf(',') + 1; // 寻找第一个变量值开始的地方
+        int iEndIndex = 0;
+        String strVariableValue = "";
+        double dVariableValue = 0.0;
+        while( ( iEndIndex = str.indexOf(')', iBeginIndex) ) != -1 )
+        {
+            strVariableValue = str.substring(iBeginIndex, iEndIndex);
+            dVariableValue = Double.valueOf(strVariableValue);
+            aryListVariableValue.add(dVariableValue);
+            iBeginIndex = str.indexOf(',', iEndIndex);
+            if( iBeginIndex == -1 )
+            {
+                break;
+            }
+            iBeginIndex = iBeginIndex + 1;
+        }
+        // 测试输出语句
+        for(int i = 0; i < aryListVariableValue.size(); ++i)
+        {
+            System.out.println("第" + i + "个变量名称： " + aryListVariableValue.get(i));
+        }
+        return aryListVariableValue;
+    }
+    
+    static private ArrayList _getDataSets(String str)
+    {
+        ArrayList aryListDataSets = new ArrayList();
+        // 先进行参数
+        if( str == null || str.isEmpty() )
+        {
+            return aryListDataSets;
+        }
+        
+        aryListDataSets.clear(); // 首先清空 aryListDataSet
+        
+        int iBeginIndexMBracket = str.indexOf('['); // 查找第一个 [ 的位置
+        int iEndIndexMBracket = str.indexOf(']'); // 查找第一个 ] 的位置，以和 [ 匹配
+        if( iBeginIndexMBracket >= iEndIndexMBracket ) return aryListDataSets;
+        
+        while( iBeginIndexMBracket != -1 && iEndIndexMBracket != -1 )
+        {
+            ArrayList aryListDataSet = new ArrayList();
+            ArrayList aryListPointName = new ArrayList();
+            ArrayList aryListPointValue = new ArrayList();
+            
+            String strDataset = str.substring(iBeginIndexMBracket, iEndIndexMBracket + 1);
+            
+            int iBeginSBracket = strDataset.indexOf('('); // 查找这个[]数据集中第一个(
+            int iEndSBracket = strDataset.indexOf(')'); // 查找这个[]数据集中第一个)
+            int iComma = strDataset.indexOf(',', iBeginSBracket); // 寻找()数据对中的逗号位置
+            while( iBeginSBracket != -1 && iEndSBracket != -1 && iComma != -1 )
+            {
+                aryListPointName.add( strDataset.substring(iBeginSBracket + 1, iComma) );
+                aryListPointValue.add( Double.valueOf(strDataset.substring(iComma + 1, iEndSBracket)) );
+                
+                iBeginSBracket = strDataset.indexOf('(', iEndSBracket);
+                if( iBeginSBracket == -1 )
+                {
+                    break; // 已经是最后一个()数据对了
+                }
+                iEndSBracket = strDataset.indexOf(')', iBeginSBracket); // 查找这个[]数据集中下一个)
+                iComma = strDataset.indexOf(',', iBeginSBracket); // 寻找()数据对中的逗号位置
+            }
+            aryListDataSet.add( aryListPointName );
+            aryListDataSet.add( aryListPointValue );
+            
+            aryListDataSets.add(aryListDataSet);
+            iBeginIndexMBracket = str.indexOf('[', iEndIndexMBracket);
+            if(iBeginIndexMBracket == -1)
+            {
+                break; // 已经没有 [] 表示的数据点集了
+            }
+            iEndIndexMBracket = str.indexOf(']', iBeginIndexMBracket);
+            
+        } // while( iBeginIndexMBracket != -1 && iEndIndexMBracket != -1 )
+        
+        // 测试语句，输出一下  aryListDataSets
+        for(int i = 0; i < aryListDataSets.size(); ++i)
+        {
+            ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
+            ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
+            ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+            
+            System.out.println("第" + i + "个数据点值为：");
+            for(int j = 0; j < aryListPointName.size(); ++j)
+            {
+                System.out.println("\t(" + aryListPointName.get(j) + "," + aryListPointValue.get(j) + ")");
+            }
+        }
+        
+        return aryListDataSets;
+    }
+    
+    static private boolean _validateDataSet(ArrayList aryListDataSets, boolean bFirstSocketMessage)
+    {
+        // 用于对获取到的数据集进行检测，数据集合理返回 true，否则返回 false
+        // 参数检查
+        if( aryListDataSets == null || aryListDataSets.isEmpty() )
+        {
+            return false;
+        }
+        
+        if( bFirstSocketMessage == true )
+        {
+            // 目前只检查aryListDataSets每个元素中两个数组的维数是否相等，不相等时出现异常，返回false
+
+            for(int i = 0; i < aryListDataSets.size(); ++i)
+            {
+                ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
+                ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
+                ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+
+                if( aryListPointName.size() != aryListPointValue.size() )
+                {
+                    // 两个数据集包含的元素个数对应不上，说明有的变量名称或者数值缺失，存在问题
+                    return false;
+                }
+            }
+        }
+        else //检验后续的数据集合法性
+        {
+            // 将 aryListDataSets 同类的静态列表 _aryListDataSets相比较，维数相同说明aryListDataSets合法。
+            // 而 _aryListDataSets是第一次socket消息提取得到的数据集，从这个角度考虑，
+            // 第一次发送的socket消息非常重要
+            if( aryListDataSets.size() != _aryListDataSets.size() )
+            {
+                return false;
+            }
+            else
+            {
+                for(int i = 0; i < aryListDataSets.size(); ++i)
+                {
+                    ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
+                    ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
+                    ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+                    
+                    ArrayList __aryListDataSet = (ArrayList)_aryListDataSets.get(i);
+                    ArrayList __aryListPointName = (ArrayList)__aryListDataSet.get(0);
+                    // ArrayList __ryListPointValue = (ArrayList)__aryListDataSet.get(1);
+
+                    if( aryListPointName.size() != aryListPointValue.size() 
+                            ||  aryListPointName.size() != __aryListPointName.size())
+                    {
+                        // 两个数据集包含的元素个数对应不上，说明有的变量名称或者数值缺失，存在问题
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
     
     static private void _startNewSimulationInVergil(String startVergilcmd)
@@ -448,22 +879,5 @@ public class WinMain {
             e.printStackTrace();   
         }
     }
-    static private int _get_loop_count(String str)
-    {
-        return -1;
-    }
-    static private double _get_simulation_time(String str)
-    {
-        return 0.0;
-    }
-    static private ArrayList _getPointNameAryList(String str)
-    {
-        return null;
-    }
-    static private ArrayList _getPointValueAryList(String str)
-    {
-        return null;
-    }
-
 
 }
