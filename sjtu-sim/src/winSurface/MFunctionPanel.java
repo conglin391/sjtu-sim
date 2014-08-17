@@ -145,7 +145,7 @@ public class MFunctionPanel implements ActionListener {
 		gridbag.setConstraints(parameterField, c);
 		dialogPane.add(parameterField);
 
-		retValueField = new JTextField("(y1,V)|(y2,SOC)|(Ppv,Ppv)");
+		retValueField = new JTextField("(y1,V)-(y2,SOC)|(Ppv,Ppv)");
 		gridx = 0;
 		gridy = 5;
 		gridwidth = 6;
@@ -228,16 +228,25 @@ public class MFunctionPanel implements ActionListener {
 			return false;
 		File mFile = new File(filePath);
 
-		String[] returnValtmp = retValueField.getText().split("\\|");
-		String[] returnVal = new String[returnValtmp.length];
-		String[] returnValRef = new String[returnValtmp.length];
+		/* === 处理返回值 === */
+		String[] returnValtmptmp = retValueField.getText().split("\\|");
+		String[][] returnValtmp = new String[returnValtmptmp.length][];
+		String[][] returnVal = new String[returnValtmp.length][];
+		String[][] returnValRef = new String[returnValtmp.length][];
 		for (int i = 0; i < returnValtmp.length; i++) {
-			String[] tmp = returnValtmp[i].replace("(", "").replace(")", "")
-					.split(",");
-			returnVal[i] = tmp[0];
-			returnValRef[i] = tmp[1];
+			returnValtmp[i] = returnValtmptmp[i].split("-");
+			returnVal[i] = new String[returnValtmp[i].length];
+			returnValRef[i] = new String[returnValtmp[i].length];
+			for (int j = 0; j < returnValtmp[i].length; j++) {
+				returnVal[i][j] = returnValtmp[i][j].split(",")[0].replace("(",
+						"");
+				returnValRef[i][j] = returnValtmp[i][j].split(",")[1].replace(
+						")", "");
+			}
+
 		}
 
+		/* === 处理输入值 === */
 		String[] inputtmp = parameterField.getText().split("\\|");
 		String[] inputVal = new String[inputtmp.length];
 		String[] inputValRef = new String[inputtmp.length];
@@ -252,13 +261,22 @@ public class MFunctionPanel implements ActionListener {
 
 		try {
 			Writer out = new FileWriter(mFile);
-			out.write("function "
-					+ Arrays.toString(returnVal)
-					+ " = "
+			String retmp = "";
+			for (int i = 0; i < returnVal.length; i++)
+				retmp += Arrays.toString(returnVal[i]).replace("[", "")
+						.replace("]", ", ");
+			retmp = retmp.substring(0, retmp.length() - 2);
+
+			// 函数头部分
+			out.write("function ["
+					+ retmp
+					+ "] = "
 					+ funNameField.getText()
 					+ "("
 					+ Arrays.toString(inputVal).replace("[", "")
 							.replace("]", "") + ")\n");
+			// 主体部分
+			out.write("import newtest.ClientforM;\ntest = ClientforM();\n");
 			out.write("assignin('base','" + sim_mod + "',-1);\n");
 			out.write("iteration = evalin('base','iteration');\n");
 			out.write("if iteration == 1\n\t" + modleNameField.getText() + "\n");
@@ -278,9 +296,23 @@ public class MFunctionPanel implements ActionListener {
 			out.write("while evalin('base','" + sim_mod + "') == -1 \n");
 			out.write("\tpause(0.0001);\nend\n");
 
-			for (int i = 0; i < returnVal.length; i++)
-				out.write(returnVal[i] + " = evalin('base','" + returnValRef[i]
-						+ "');\n");
+			// socket输出，返回值部分
+			out.write("str = ['<',num2str(evalin('base','iteration'))];\n"
+					+ "str = [str,'-',num2str(evalin('base','simulationTime'))];\n");
+			
+			for(int i=0;i<returnVal.length;i++){
+				out.write("str = [str,'-['];\n");
+				for (int j=0;j<returnVal[i].length;j++){
+					out.write(returnVal[i][j] + " = evalin('base','" + returnValRef[i][j]
+							+ "');\n");
+					out.write("str = [str,'(','"+returnValRef[i][j]+"',',',num2str("+returnVal[i][j]+"),')'];\n");
+					if (j<returnVal[i].length-1)
+						out.write("str = [str,'-'];\n");
+				}
+				out.write("str = [str,']'];\n");		
+			}
+			out.write("str = [str,'>'];\ntest.CreatSocket(str);\n");
+			
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -289,6 +321,22 @@ public class MFunctionPanel implements ActionListener {
 		}
 
 		return true;
+
+	}
+
+	public static void main(String[] args) {
+		final JFrame j = new JFrame();
+		j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		j.setVisible(true); // 默认为false
+		j.setSize(100, 100);
+		j.setLocation(500, 300);
+		JButton btnMfunction = new JButton("MFunction");
+		btnMfunction.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new MFunctionPanel(j);
+			}
+		});
+		j.getContentPane().add(btnMfunction, BorderLayout.CENTER);
 
 	}
 
