@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
 
 import ptolemy.plot.*;
 
@@ -14,7 +15,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*; // java数据结构的包，用到其中的 ArrayList
 
-public class WinMain {
+//对代码结构做了调整，将各按钮动作集合到一起 方便代码阅读和修改,所有事件集合到actionPerformed类 -ZH
+/**
+ * @author ZH
+ *
+ */
+public class WinMain implements ActionListener{
 
     /****************************************************************
      *******************   private members *************************/
@@ -64,8 +70,41 @@ public class WinMain {
     static boolean _bSimulationBegin = false; // 用来指示当前时间，界面是否有仿真在运行
     
     static int _iLoopCount = 0;
+    
+    //将所有Action集合到此处，便于编写和修改 -ZH
+    //因为本软件各种交互事件较多，建议：所以主界面中需要添加事件的，可直接添加.addActionListener(this)，然后在此类中捕获后用if判断，执行响应动作
+    //若动作语句较长，建议分拆成单独的函数，利于结构的清晰（如打开xml，我暂且分拆成openPTxml函数）
+	public void actionPerformed(ActionEvent e) {
+		String cmd = e.getActionCommand();
+		if (cmd.equals("打开(O)")) {     
+			openPTxml();      
+        }
+		if (cmd.equals("启动MATALB")){
+			try {
+				Runtime.getRuntime().exec("matlab");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				//输出启动异常信息~~~~
+			}
+		}
+		if (cmd.equals("启动Vergil")){
+			try {
+				Runtime.getRuntime().exec("vergil");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				//输出启动异常信息~~~~
+			}
+		}
+		if (cmd.equals("退出程序(X)")){
+			//之后再加个确认窗口
+			System.exit(0);
+		}
+		
 
-
+		
+		
+	}
+	
     public WinMain()
     {
         // 类成员变量的初始化
@@ -124,27 +163,34 @@ public class WinMain {
 
         // 创建菜单项，并设置好快捷键
         JMenuItem menuItemOpenInFile = new JMenuItem("打开(O)");
+        //添加事件侦听 -ZH
+        menuItemOpenInFile.addActionListener(this);
         // 为“打开”这个菜单项 设定 快捷键 --- Ctrl + O
         menuItemOpenInFile.setAccelerator(KeyStroke.getKeyStroke('O', java.awt.Event.CTRL_MASK, false));
         menuFile.add(menuItemOpenInFile); // 将这个菜单项添加到“文件”菜单下
         menuFile.addSeparator();
 
         JMenuItem menuItemOpenMATALBInFile = new JMenuItem("启动MATALB");
+        menuItemOpenMATALBInFile.addActionListener(this);
         menuFile.add(menuItemOpenMATALBInFile);
 
         JMenuItem menuItemOpenPTInFile = new JMenuItem("启动 Vergil");
+        menuItemOpenPTInFile.addActionListener(this);
         menuFile.add(menuItemOpenPTInFile);
 
         menuFile.addSeparator();
         JMenuItem menuItemExitInFile = new JMenuItem("退出程序(X)");
+        menuItemExitInFile.addActionListener(this);
         menuItemExitInFile.setAccelerator(KeyStroke.getKeyStroke('X', java.awt.Event.CTRL_MASK, false));
         menuFile.add(menuItemExitInFile);        
 
         JMenuItem menuItemGetHelpInHelp = new JMenuItem("使用说明");
+        menuItemGetHelpInHelp.addActionListener(this);
         menuHelp.add(menuItemGetHelpInHelp);
         menuHelp.addSeparator();
 
         JMenuItem menuItemInfoInHelp = new JMenuItem("关于SimJ&M");
+        menuItemInfoInHelp.addActionListener(this);
         menuHelp.add(menuItemInfoInHelp);
 
 
@@ -166,89 +212,92 @@ public class WinMain {
         mainTabbedPane.setEnabledAt(0,true);
 
 
-        // 经过以上工作，基本的窗口，选项卡面板以及菜单都创建完毕，下面开始针对每个菜单项添加相应的事件处理机制
-        menuItemOpenInFile.addActionListener(new ActionListener()
-        {
-            /* “打开”文件菜单项的动作事件，当单击这个菜单项时，会弹出文件选择对话框，目标是让用户选择 .xml 模型文件
-             * 在用户选择好文件之后，获取被选中的文件路径全称，并传递给 Ptolemy II，开启仿真 
-             * */
-            public void actionPerformed(ActionEvent Event)
-            {
-                // 创建一个文件选择对话框，供用户选择 .xml 文件
-                JFileChooser fileChooser = new JFileChooser("D:\\");
-                File file = null;
-                int iResult = 0;
-                fileChooser.setApproveButtonText("确定");
-                fileChooser.setDialogTitle("打开文件");
-                iResult = fileChooser.showOpenDialog(mainFrame);
-                /* 当用户有选中文件 并且按下"确定"按钮后，就可以通过 getSelectedFile() 方法取得文件对象
-                 * */
-                if( iResult == JFileChooser.APPROVE_OPTION )
-                {
-                    // 用户按下的“确定”按钮
-                    file = fileChooser.getSelectedFile();
-                    System.out.println("选择的文件名：" + file.getName());
-                    System.out.println("选择的文件名：" + file.getAbsolutePath());
-
-                    String fileName = file.getName();
-                    if( fileName.endsWith("xml") ) // 选中的确实是xml文件
-                    {
-                        // 将选中的xml文件传给 Vergil，开启仿真
-                        //String startVergilcmd = "vergil -run E:\\PT_workspace\\pvbattery_50-60_org.xml";
-                        String startVergilcmd = "vergil -run " + file.getAbsolutePath();
-
-                        // 检查是否已经有仿真在进行
-                        if( _bSimulationBegin == true )
-                        {
-                            // 弹出对话框提示用户，是否结束当前仿真，并开启新的仿真
-                            int iStartNewSim = JOptionPane.showConfirmDialog(mainFrame, 
-                                    "目前系统已经有仿真程序在运行，是否结束当前仿真程序并开启新的仿真", 
-                                    "是否结束当前仿真程序", 
-                                    JOptionPane.YES_NO_OPTION);
-                            if( iStartNewSim == JOptionPane.YES_OPTION )
-                            {
-                                // 清除当前仿真的所有选项卡以及相关信息
-                                // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）
-                                
-                                // 修改 _bSimulationBegin 的值，表示可以开启新的仿真
-                                _bSimulationBegin = false;
-                                
-                                /******************  ！！！！！！！！！！！！！！！！！！！！！！！
-                                 * ！！！！！！这里有个难题，如何关闭已经运行的pt和matlab，！！！！！！！！！！！！！
-                                 * 如果不能关闭旧的pt和matlab程序，新开启的仿真程序，可能在socket消息发送上受到就程序发送的消息的干扰
-                                 * *****************/
-                            }
-                            else
-                            {
-                                return; // 事件处理函数结束，不会启动新的仿真
-                            }                            
-                        } //  if( _bSimulationBegin == true )
-
-                        _startNewSimulationInVergil(startVergilcmd);
-                        
-                        
-                    } // if( fileName.endsWith("xml") ) // 选中的确实是xml文件
-                    else
-                    {
-                        // 选中的并不是 xml 文件，弹出对话框提示用户
-                        JOptionPane.showMessageDialog(mainFrame, 
-                                file.getName() + " 不是 .xml文件，Ptolemy II无法打开此文件，请重新选择！", 
-                                "错误的文件类型", 
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-
-                } // if( iResult == JFileChooser.APPROVE_OPTION )
-                else
-                {
-                    // 用户没有点击确定按钮，do nothing
-                }
-                // return;
-            }
-        }); // menuItemOpenInFile.addActionListener(new ActionListener()
 
     }
 
+    private void openPTxml(){
+    	// 创建一个文件选择对话框，供用户选择 .xml 文件
+        JFileChooser fileChooser = new JFileChooser("D:\\");
+        // 加入文件类型选择 -ZH
+        fileChooser.addChoosableFileFilter(new JAVAFileFilter("xml"));
+        File file = null;
+        int iResult = 0;
+        fileChooser.setApproveButtonText("确定");
+        fileChooser.setDialogTitle("打开文件");
+        iResult = fileChooser.showOpenDialog(mainFrame);
+        /* 当用户有选中文件 并且按下"确定"按钮后，就可以通过 getSelectedFile() 方法取得文件对象
+         * */
+        if( iResult == JFileChooser.APPROVE_OPTION )
+        {
+            // 用户按下的“确定”按钮
+            file = fileChooser.getSelectedFile();
+            System.out.println("选择的文件名：" + file.getName());
+            System.out.println("选择的文件名：" + file.getAbsolutePath());
 
+            String fileName = file.getName();
+            if( fileName.endsWith("xml") ) // 选中的确实是xml文件
+            {
+                // 将选中的xml文件传给 Vergil，开启仿真
+                //String startVergilcmd = "vergil -run E:\\PT_workspace\\pvbattery_50-60_org.xml";
+            	//针对路径空格问题，增加双引号  -ZH
+            	String startVergilcmd = "vergil -run \"" + file.getAbsolutePath()+"\"";
+
+                // 检查是否已经有仿真在进行
+                if( _bSimulationBegin == true )
+                {
+                    // 弹出对话框提示用户，是否结束当前仿真，并开启新的仿真
+                    int iStartNewSim = JOptionPane.showConfirmDialog(mainFrame, 
+                            "目前系统已经有仿真程序在运行，是否结束当前仿真程序并开启新的仿真", 
+                            "是否结束当前仿真程序", 
+                            JOptionPane.YES_NO_OPTION);
+                    if( iStartNewSim == JOptionPane.YES_OPTION )
+                    {
+                        // 清除当前仿真的所有选项卡以及相关信息
+                        // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）
+                        
+                        // 修改 _bSimulationBegin 的值，表示可以开启新的仿真
+                    	
+                    	//kill PT Matlab进程 --ZH
+                    	
+                    	try {
+                    		String commandStr="taskkill /f /im MATLAB.exe"; 
+							Runtime.getRuntime().exec(commandStr);
+							commandStr="taskkill /f /im vergil.exe"; 
+							Runtime.getRuntime().exec(commandStr);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                        _bSimulationBegin = false;
+                        
+                    }
+                    else
+                    {
+                        return; // 事件处理函数结束，不会启动新的仿真
+                    }                            
+                } //  if( _bSimulationBegin == true )
+
+                _startNewSimulationInVergil(startVergilcmd);
+                
+                
+            } // if( fileName.endsWith("xml") ) // 选中的确实是xml文件
+            else
+            {
+                // 选中的并不是 xml 文件，弹出对话框提示用户
+                JOptionPane.showMessageDialog(mainFrame, 
+                        file.getName() + " 不是 .xml文件，Ptolemy II无法打开此文件，请重新选择！", 
+                        "错误的文件类型", 
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+        } // if( iResult == JFileChooser.APPROVE_OPTION )
+        else
+        {
+            // 用户没有点击确定按钮，do nothing
+        }
+        // return;
+    }
+    
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 
@@ -382,6 +431,7 @@ public class WinMain {
 
 
     /****************************************************************
+     * //------不是很理解为何所有方法都要设成了静态方法？			-ZH
      *******************   private methods *************************/
     static private void _handleSocketMessage(String socketMessage)
     {
@@ -498,14 +548,16 @@ public class WinMain {
                 
                 ArrayList aryListDataSet = (ArrayList)_aryListDataSets.get(i);
                 ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
-                ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+                ArrayList<Double> aryListPointValue = (ArrayList<Double>)aryListDataSet.get(1);
                 for(int k = 0; k < aryListPointName.size(); ++k)
                 {
                     vcCaption.add( (String)aryListPointName.get(k) );
                     tabTitle = tabTitle + "," + (String)aryListPointName.get(k);
                     ((Plot)_aryListPlotPanel.get(i)).addPoint(k, 
                             dSimulationTime, 
-                            (double)aryListPointValue.get(k), 
+                            //Double.valueOf((String) aryListPointValue.get(k)),
+
+                            aryListPointValue.get(k), 
                             true);                   
                     //
                 }
@@ -563,13 +615,13 @@ public class WinMain {
                 {
                     ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
                     ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
-                    ArrayList aryListPointValue = (ArrayList)aryListDataSet.get(1);
+                    ArrayList<Double> aryListPointValue = (ArrayList<Double>)aryListDataSet.get(1);
                     
                     for(int k = 0; k < aryListPointName.size(); ++k)
                     {
                         ((Plot)_aryListPlotPanel.get(i)).addPoint(k, 
                                 dSimulationTime, 
-                                (double)aryListPointValue.get(k), 
+                                aryListPointValue.get(k), 
                                 true);
                         
                         //
@@ -850,34 +902,68 @@ public class WinMain {
     
     static private void _startNewSimulationInVergil(String startVergilcmd)
     {
-        Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
-        // 这里已经试过，必须使用try-catch结构才行
-        try {   
+    	Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
+        try{
             Process p = run.exec(startVergilcmd);// 启动另一个进程来执行 指定的系统 命令   
-            BufferedInputStream in = new BufferedInputStream(p.getInputStream());   
-            BufferedReader inBr = new BufferedReader(new InputStreamReader(in));   
-            String lineStr;   
-            while ((lineStr = inBr.readLine()) != null)   
-                //获得命令执行后在控制台的输出信息   
-                // 控制台有输出信息，那说明本机没有安装好Ptolemy II或者没有为Ptolemy II设置好环境变量
-
-                System.out.println(lineStr);// 打印输出信息   
-            //检查命令是否执行失败。   
-            if (p.waitFor() != 0) {   
-                if (p.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束 
-                    JOptionPane.showMessageDialog(mainFrame, 
-                            lineStr + "!" + "出现这种错误，有两种可能：（1）本机没有安装Ptomely II；\n;"
-                                    + "（2）本机已正确安装了Ptolemy II，但是没有为其设置好系统环境变量", 
-                                    "无法启动Vergil", 
-                                    JOptionPane.ERROR_MESSAGE);
-                System.err.println("命令执行失败!  ");   
-            }   
-            inBr.close();   
-            in.close();   
-        } 
-        catch (Exception e) {   
-            e.printStackTrace();   
         }
+        catch (Exception e){}
+//        Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
+//        // 这里已经试过，必须使用try-catch结构才行
+//        try {   
+//            Process p = run.exec(startVergilcmd);// 启动另一个进程来执行 指定的系统 命令   
+//            BufferedInputStream in = new BufferedInputStream(p.getInputStream());   
+//            BufferedReader inBr = new BufferedReader(new InputStreamReader(in));   
+//            String lineStr;   
+//            while ((lineStr = inBr.readLine()) != null)   
+//                //获得命令执行后在控制台的输出信息   
+//                // 控制台有输出信息，那说明本机没有安装好Ptolemy II或者没有为Ptolemy II设置好环境变量
+//
+//                System.out.println(lineStr);// 打印输出信息   
+//            //检查命令是否执行失败。   
+//            if (p.waitFor() != 0) {   
+//                if (p.exitValue() == 1)//p.exitValue()==0表示正常结束，1：非正常结束 
+//                    JOptionPane.showMessageDialog(mainFrame, 
+//                            lineStr + "!" + "出现这种错误，有两种可能：（1）本机没有安装Ptomely II；\n;"
+//                                    + "（2）本机已正确安装了Ptolemy II，但是没有为其设置好系统环境变量", 
+//                                    "无法启动Vergil", 
+//                                    JOptionPane.ERROR_MESSAGE);
+//                System.err.println("命令执行失败!  ");   
+//            }   
+//            inBr.close();   
+//            in.close();   
+//        } 
+//        catch (Exception e) {   
+//            e.printStackTrace();   
+//        }
     }
 
+
+}
+
+
+class JAVAFileFilter extends FileFilter{
+	String ext;
+	public JAVAFileFilter(String s){
+		ext=s;
+	}
+	@Override
+	public boolean accept(File file) {
+		if (file.isDirectory())
+			return true;
+		String fileName = file.getName();
+		int index = fileName.lastIndexOf('.');
+		if (index>0 && index<fileName.length()-1){
+			String extension = fileName.substring(index+1).toLowerCase();
+			if (extension.equals(ext))
+				return true;
+		}
+		return false;
+	}
+	public String getDescription(){
+		if (ext.equals("xml"))
+			return "PT xml file (*.xml)";
+		return "";
+	}
+	
+	
 }
