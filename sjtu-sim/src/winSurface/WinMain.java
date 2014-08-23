@@ -71,6 +71,9 @@ public class WinMain implements ActionListener{
     
     static int _iLoopCount = 0;
     
+    // add by Bruse, 2014-8-23
+    static double _dSimulationTime = 0.0; // 记录当前的仿真时间，用于后面 _handleNextSocket函数对socket消息做过滤检查
+    
     //将所有Action集合到此处，便于编写和修改 -ZH
     //因为本软件各种交互事件较多，建议：所以主界面中需要添加事件的，可直接添加.addActionListener(this)，然后在此类中捕获后用if判断，执行响应动作
     //若动作语句较长，建议分拆成单独的函数，利于结构的清晰（如打开xml，我暂且分拆成openPTxml函数）
@@ -120,6 +123,8 @@ public class WinMain implements ActionListener{
         _bSimulationBegin = false;
         
         _iLoopCount = 0;
+        
+        _dSimulationTime = 0.0; // add by Bruse, 2014-8-23
 
 
         // 下面开始创建出界面窗口，并在窗口中添加好各个菜单项
@@ -243,35 +248,65 @@ public class WinMain implements ActionListener{
             	String startVergilcmd = "vergil -run \"" + file.getAbsolutePath()+"\"";
 
                 // 检查是否已经有仿真在进行
-                if( _bSimulationBegin == true )
-                {
-                    // 弹出对话框提示用户，是否结束当前仿真，并开启新的仿真
-                    int iStartNewSim = JOptionPane.showConfirmDialog(mainFrame, 
-                            "目前系统已经有仿真程序在运行，是否结束当前仿真程序并开启新的仿真", 
-                            "是否结束当前仿真程序", 
-                            JOptionPane.YES_NO_OPTION);
-                    if( iStartNewSim == JOptionPane.YES_OPTION )
-                    {
-                        // 清除当前仿真的所有选项卡以及相关信息
-                        // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）
-                        
-                        // 修改 _bSimulationBegin 的值，表示可以开启新的仿真
-                    	
-                    	//kill PT Matlab进程 --ZH
-                    	
-                    	try {
-                    		String commandStr="taskkill /f /im MATLAB.exe"; 
-							Runtime.getRuntime().exec(commandStr);
-							commandStr="taskkill /f /im vergil.exe"; 
-							Runtime.getRuntime().exec(commandStr);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-                        _bSimulationBegin = false;
-                        
-                    }
-                    else
+            	if( _bSimulationBegin == true )
+            	{
+            	    // 弹出对话框提示用户，是否结束当前仿真，并开启新的仿真
+            	    int iStartNewSim = JOptionPane.showConfirmDialog(mainFrame, 
+            	            "目前系统已经有仿真程序在运行，是否结束当前仿真程序并开启新的仿真", 
+            	            "是否结束当前仿真程序", 
+            	            JOptionPane.YES_NO_OPTION);
+            	    if( iStartNewSim == JOptionPane.YES_OPTION )
+            	    {
+            	        // 清除当前仿真的所有选项卡以及相关信息
+            	        // _clearOldSimulation(); 此处考虑暂不执行这个函数，保留旧的仿真所有信息，因为可能新的仿真无效（比如xml不正确）
+
+            	        // 修改 _bSimulationBegin 的值，表示可以开启新的仿真
+
+            	        //kill PT Matlab进程 --ZH
+
+            	        try {
+            	            // 经测试，这里不能简单地创建两个进程kill掉matlab呃vergil，
+            	            // 必须等待两个进程执行完毕，才能继续执行if结构外面的代码，否则if结构外面的
+            	            // _startNewSimulationInVergil 函数执行失效，不能启动新的vergil程序
+            	            // 出现这样的情况，可能的原因是两个taskkill进程在_startNewSimulationInVergil函数执行时，
+            	            // 还没有结束，这样第二条taskkill进程会kill掉新出现的vergil程序
+            	     
+            	            String commandStr="taskkill /f /im MATLAB.exe"; 
+            	            Process p = Runtime.getRuntime().exec(commandStr);
+            	            // 等待命令执行完毕，在执行后续操作
+            	            if(p.waitFor() != 0)
+            	            {
+            	                if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
+            	                {
+            	                    // do nothing
+            	                }
+            	                else
+            	                {
+            	                    // 表示taskkill命令执行失败，考虑生成日志文件报告错误
+            	                }
+            	            }
+            	            commandStr="taskkill /f /im vergil.exe"; 
+            	            p = Runtime.getRuntime().exec(commandStr);
+            	            // 等待命令执行完毕，在执行后续操作
+            	            if(p.waitFor() != 0)
+            	            {
+            	                if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
+            	                {
+            	                    // do nothing
+            	                }
+            	                else
+                                {
+                                    // 表示taskkill命令执行失败，考虑生成日志文件报告错误
+                                }
+                            }
+            	        } catch (Exception e1) {
+            	            // TODO Auto-generated catch block
+            	            e1.printStackTrace();
+            	        }
+            	        _bSimulationBegin = false;
+
+            	    }
+            	    else
                     {
                         return; // 事件处理函数结束，不会启动新的仿真
                     }                            
@@ -305,9 +340,9 @@ public class WinMain implements ActionListener{
 
         // 在这个主函数里，测试能否动态向 mainTabbedPane添加新的选项卡
 
-        JPanel panel_1 = new JPanel();       
+        /*JPanel panel_1 = new JPanel();       
         mainTabbedPane.addTab("由主函数添加",panel_1); 
-        mainTabbedPane.setEnabledAt(1,true);
+        mainTabbedPane.setEnabledAt(1,true);*/
         // 经测试，上面代码是OK的，也就是可以在主函数中动态添加选项卡面板
 
         
@@ -455,7 +490,7 @@ public class WinMain implements ActionListener{
         if(b == true) // 消息格式正确，可以进行下一步的处理工作
         {
             int iLoopCount = _getLoopCount(socketMessage);
-            if( iLoopCount > _iLoopCount ) // socket消息的数据集循环次数合法
+            if( iLoopCount > 0 ) // socket消息的数据集循环次数合法
             {
                 if( iLoopCount == 1 && _bSimulationBegin == false) 
                 {
@@ -587,7 +622,10 @@ public class WinMain implements ActionListener{
             _iLoopCount = 1;
             
             // 设置已存在仿真进程标志
-            _bSimulationBegin = true;          
+            _bSimulationBegin = true;
+            
+            // 更新仿真时间， add by Bruse, 2014-8-23
+            _dSimulationTime = dSimulationTime;
         }
     }
     
@@ -600,8 +638,9 @@ public class WinMain implements ActionListener{
         }
         
         // 处理后续的socket消息，动态解析数据点并添加到plot面板中去即可
-        int iLoopCount = _getLoopCount(socketMessage);
-        if( iLoopCount > _iLoopCount ) // 本次socket消息的循环次数合法，是这次仿真的后续循环结果消息
+        double dSimulationTime = _getSimulationTime(socketMessage);
+        
+        if( dSimulationTime > _dSimulationTime ) // 本次socket消息的仿真时间大于当前静态变量记录的时间，是这次仿真的后续循环结果消息
         {
             // 获取这次socket消息的数据集
             ArrayList aryListDataSets = _getDataSets(socketMessage);
@@ -610,7 +649,7 @@ public class WinMain implements ActionListener{
             if( _validateDataSet(aryListDataSets, false) )
             {
                 // 数据合理，开始向每个Plot面板中添加数据点
-                double dSimulationTime = _getSimulationTime(socketMessage);
+                
                 for(int i = 0; i < aryListDataSets.size(); ++i)
                 {
                     ArrayList aryListDataSet = (ArrayList)aryListDataSets.get(i);
@@ -629,8 +668,12 @@ public class WinMain implements ActionListener{
                     
                    ((Plot)_aryListPlotPanel.get(i)).fillPlot(); // 重绘图形
                 }
+                
                 // 更新当前类的静态循环次数变量
-                _iLoopCount = iLoopCount;
+                _iLoopCount = _getLoopCount(socketMessage);
+                
+                // 更新当前类的静态存放的仿真时间
+                _dSimulationTime = dSimulationTime;
             }          
         }             
     }
@@ -656,6 +699,8 @@ public class WinMain implements ActionListener{
         _aryListDataSets.clear(); // 清空数据集列表
         _bSimulationBegin = false;
         _iLoopCount = 0;
+        
+        _dSimulationTime = 0.0;
     }
     
 
@@ -902,9 +947,9 @@ public class WinMain implements ActionListener{
     
     static private void _startNewSimulationInVergil(String startVergilcmd)
     {
-    	Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
+    	// Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
         try{
-            Process p = run.exec(startVergilcmd);// 启动另一个进程来执行 指定的系统 命令   
+            Runtime.getRuntime().exec(startVergilcmd);// 启动另一个进程来执行 指定的系统 命令   
         }
         catch (Exception e){}
 //        Runtime run = Runtime.getRuntime(); //启动与应用程序相关的运行时对象
