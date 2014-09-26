@@ -13,7 +13,8 @@ import ptolemy.plot.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.*; // java数据结构的包，用到其中的 ArrayList
+import java.util.*;
+import javax.swing.table.DefaultTableModel; // java数据结构的包，用到其中的 ArrayList
 
 //对代码结构做了调整，将各按钮动作集合到一起 方便代码阅读和修改,所有事件集合到actionPerformed类 -ZH
 /**
@@ -73,6 +74,13 @@ public class WinMain implements ActionListener{
     
     // add by Bruse, 2014-8-23
     static double _dSimulationTime = 0.0; // 记录当前的仿真时间，用于后面 _handleNextSocket函数对socket消息做过滤检查
+    private JTextField textField;
+    private JTextField textField_1;
+    private JTextField textField_2;
+    private JTextField textField_3;
+    private JTextField textField_4;
+    private JTextField textField_5;
+    private JTextField textField_6;
     
     //将所有Action集合到此处，便于编写和修改 -ZH
     //因为本软件各种交互事件较多，建议：所以主界面中需要添加事件的，可直接添加.addActionListener(this)，然后在此类中捕获后用if判断，执行响应动作
@@ -214,7 +222,219 @@ public class WinMain implements ActionListener{
         // 添加选项卡容器，并且设置每个选项卡的标签以及其是否可用
         JPanel panel0 = new JPanel();
         mainTabbedPane.addTab("开始",panel0); // 将“开始”面板 panel0 作为第一个选项卡
+        
         mainTabbedPane.setEnabledAt(0,true);
+        panel0.setLayout(null);
+        
+        JPanel panel_1 = new JPanel();
+        panel_1.setToolTipText("");
+        panel_1.setBounds(85, 28, 696, 75);
+        panel0.add(panel_1);
+        panel_1.setLayout(null);
+        
+        JButton button = new JButton("开始");
+        button.setBounds(50, 10, 57, 23);
+        panel_1.add(button);
+        
+        JButton button_1 = new JButton("暂停");
+        button_1.setBounds(117, 10, 57, 23);
+        panel_1.add(button_1);
+        
+        JButton button_2 = new JButton("停止");
+        button_2.setBounds(184, 10, 57, 23);
+        panel_1.add(button_2);
+        
+        textField = new JTextField();
+        textField.setBounds(270, 11, 66, 21);
+        panel_1.add(textField);
+        textField.setColumns(10);
+        
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setBounds(158, 43, 487, 22);
+        panel_1.add(progressBar);
+        
+        textField_1 = new JTextField();
+        textField_1.setBounds(50, 44, 66, 21);
+        panel_1.add(textField_1);
+        textField_1.setColumns(10);
+        
+        Choice choice = new Choice();
+        choice.setBounds(365, 12, 172, 21);
+        panel_1.add(choice);
+        
+        JButton button_3 = new JButton("打开");
+        button_3.setBounds(561, 10, 34, 23);
+        panel_1.add(button_3);
+        
+        JButton btnNewButton_1 = new JButton("上一层");
+        btnNewButton_1.setBounds(605, 10, 76, 23);
+        panel_1.add(btnNewButton_1);
+        btnNewButton_1.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        
+        JSeparator separator = new JSeparator();
+        separator.setBounds(0, 113, 879, 2);
+        panel0.add(separator);
+        
+        JSeparator separator_1 = new JSeparator();
+        separator_1.setBounds(0, 179, 879, 2);
+        panel0.add(separator_1);
+        
+        JTextPane textPane = new JTextPane();
+        textPane.setBackground(UIManager.getColor("Button.background"));
+        textPane.setText("仿真");
+        textPane.setBounds(10, 10, 49, 21);
+        panel0.add(textPane);
+        
+        JTextPane textPane_1 = new JTextPane();
+        textPane_1.setText("建模");
+        textPane_1.setBackground(SystemColor.menu);
+        textPane_1.setBounds(10, 129, 49, 21);
+        panel0.add(textPane_1);
+        
+        JTextPane textPane_2 = new JTextPane();
+        textPane_2.setText("交互");
+        textPane_2.setBackground(SystemColor.menu);
+        textPane_2.setBounds(10, 191, 49, 21);
+        panel0.add(textPane_2);
+        
+        JPanel panel_2 = new JPanel();
+        panel_2.setBounds(55, 203, 764, 138);
+        panel0.add(panel_2);
+        panel_2.setLayout(null);
+        
+        JTextPane textPane_3 = new JTextPane();
+        textPane_3.setBounds(25, 10, 66, 21);
+        textPane_3.setText("交互函数名");
+        textPane_3.setBackground(SystemColor.menu);
+        panel_2.add(textPane_3);
+        
+        textField_2 = new JTextField();
+        textField_2.setBounds(106, 10, 200, 21);
+        panel_2.add(textField_2);
+        textField_2.setColumns(10);
+        
+        JTextPane textPane_4 = new JTextPane();
+        textPane_4.setText("物理模型名");
+        textPane_4.setBackground(SystemColor.menu);
+        textPane_4.setBounds(412, 10, 66, 21);
+        panel_2.add(textPane_4);
+        
+        textField_3 = new JTextField();
+        textField_3.setBounds(488, 10, 200, 21);
+        panel_2.add(textField_3);
+        textField_3.setColumns(10);
+        
+        JTextPane textPane_5 = new JTextPane();
+        textPane_5.setText("控制参数");
+        textPane_5.setBackground(SystemColor.menu);
+        textPane_5.setBounds(25, 41, 66, 21);
+        panel_2.add(textPane_5);
+        
+        JTextPane textPane_6 = new JTextPane();
+        textPane_6.setText("输出参数");
+        textPane_6.setBackground(SystemColor.menu);
+        textPane_6.setBounds(25, 72, 66, 21);
+        panel_2.add(textPane_6);
+        
+        textField_4 = new JTextField();
+        textField_4.setBounds(106, 41, 582, 21);
+        panel_2.add(textField_4);
+        textField_4.setColumns(10);
+        
+        textField_5 = new JTextField();
+        textField_5.setColumns(10);
+        textField_5.setBounds(106, 72, 582, 21);
+        panel_2.add(textField_5);
+        
+        JButton btnMatlab = new JButton("工作空间");
+        btnMatlab.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        btnMatlab.setBounds(10, 103, 81, 23);
+        panel_2.add(btnMatlab);
+        
+        textField_6 = new JTextField();
+        textField_6.setColumns(10);
+        textField_6.setBounds(106, 104, 582, 21);
+        panel_2.add(textField_6);
+        
+        JButton btnNewButton_2 = new JButton("生成");
+        btnNewButton_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        btnNewButton_2.setBounds(698, 41, 56, 57);
+        panel_2.add(btnNewButton_2);
+        
+        JButton button_4 = new JButton("建立离散控制模型");
+        button_4.setBounds(69, 139, 136, 23);
+        panel0.add(button_4);
+        
+        Choice choice_1 = new Choice();
+        choice_1.setBounds(215, 139, 172, 21);
+        panel0.add(choice_1);
+        
+        JButton btnNewButton = new JButton("打开PT模型");
+        btnNewButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        btnNewButton.setBounds(393, 139, 32, 23);
+        panel0.add(btnNewButton);
+        
+        JButton button_5 = new JButton("建立连续动态模型");
+        button_5.setBounds(469, 139, 136, 23);
+        panel0.add(button_5);
+        
+        Choice choice_2 = new Choice();
+        choice_2.setBounds(609, 141, 172, 21);
+        panel0.add(choice_2);
+        
+        JButton btnmatlab = new JButton("打开Matlab模型");
+        btnmatlab.setBounds(787, 139, 32, 23);
+        panel0.add(btnmatlab);
+        button.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        
+        JPanel panel = new JPanel();
+        mainTabbedPane.addTab("信息交互", null, panel, null);
+        panel.setLayout(null);
+        
+        JPanel panel_3 = new JPanel();
+        panel_3.setBounds(21, 21, 372, 320);
+        panel.add(panel_3);
+        panel_3.setLayout(null);
+        
+        JTextPane textPane_7 = new JTextPane();
+        textPane_7.setBounds(108, 10, 164, 21);
+        panel_3.add(textPane_7);
+        textPane_7.setBackground(UIManager.getColor("Button.background"));
+        textPane_7.setText("信息模型  --->  物理模型");
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBounds(60, 70, 250, 210);
+        panel_3.add(scrollPane);
+        
+        JPanel panel_4 = new JPanel();
+        panel_4.setBounds(482, 21, 372, 320);
+        panel.add(panel_4);
+        panel_4.setLayout(null);
+        
+        JTextPane textPane_8 = new JTextPane();
+        textPane_8.setBounds(110, 10, 164, 21);
+        panel_4.add(textPane_8);
+        textPane_8.setText("物理模型  --->  信息模型");
+        textPane_8.setBackground(SystemColor.menu);
+        
+        JScrollPane scrollPane_1 = new JScrollPane();
+        scrollPane_1.setBounds(60, 70, 250, 210);
+        panel_4.add(scrollPane_1);
 
 
 
@@ -981,8 +1201,6 @@ public class WinMain implements ActionListener{
 //            e.printStackTrace();   
 //        }
     }
-
-
 }
 
 
