@@ -297,22 +297,33 @@ public class MFunctionPanel implements ActionListener {
 			out.write("\tpause(0.0001);\nend\n");
 
 			// socket输出，返回值部分
-			out.write("str = ['<',num2str(evalin('base','iteration'))];\n"
-					+ "str = [str,'-',num2str(evalin('base','simulationTime'))];\n");
-			
-			for(int i=0;i<returnVal.length;i++){
-				out.write("str = [str,'-['];\n");
-				for (int j=0;j<returnVal[i].length;j++){
-					out.write(returnVal[i][j] + " = evalin('base','" + returnValRef[i][j]
-							+ "');\n");
-					out.write("str = [str,'(','"+returnValRef[i][j]+"',',',num2str("+returnVal[i][j]+"),')'];\n");
-					if (j<returnVal[i].length-1)
-						out.write("str = [str,'-'];\n");
+
+			out.write("str = ['<socketMessage>'];\n"
+					+ "str = [str,'<iteration>',num2str(iteration),'</iteration>'];\n"
+					+ "str = [str,'<simulationTime>',num2str(evalin('base','simulationTime')),'</simulationTime>'];\n");
+			out.write("str = [str,'<PtolemyDataset mdlFileName=\""
+					+ modleNameField.getText() + "\">'];\n");
+			for (int i = 0; i < inputVal.length; i++)
+				out.write("str = [str,'<point name=\"" + inputValRef[i]
+						+ "\">',num2str(" + inputVal[i] + "),'</point>'];\n");
+			out.write("str = [str,'</PtolemyDataset>'];\n"
+					+ "str = [str,'<SimulinkDatasets>'];\n");
+
+			for (int i = 0; i < returnVal.length; i++) {
+				out.write("str = [str,'<dataset>'];\n");
+				for (int j = 0; j < returnVal[i].length; j++) {
+					out.write(returnVal[i][j] + " = evalin('base','"
+							+ returnValRef[i][j] + "');\n");
+					out.write("str = [str,'<point name=\"" + returnValRef[i][j]
+							+ "\">',num2str(" + returnVal[i][j]
+							+ "),'</point>'];\n");
 				}
-				out.write("str = [str,']'];\n");		
+				out.write("str = [str,'</dataset>'];\n");
 			}
-			out.write("str = [str,'>'];\ntest.CreatSocket(str);\n");
-			
+			out.write("str = [str,'</SimulinkDatasets>'];\n"
+					+ "str = [str,'</socketMessage>'];\n"
+					+ "test.CreatSocket(str);\n");
+
 			out.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -328,16 +339,19 @@ public class MFunctionPanel implements ActionListener {
 		final JFrame j = new JFrame();
 		j.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		j.setVisible(true); // 默认为false
-		j.setSize(100, 100);
+		j.setSize(555, 315);
 		j.setLocation(500, 300);
 		JButton btnMfunction = new JButton("MFunction");
+		btnMfunction.setBounds(0, 0, 139, 80);
 		btnMfunction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				new MFunctionPanel(j);
 			}
 		});
-		j.getContentPane().add(btnMfunction, BorderLayout.CENTER);
+		j.getContentPane().setLayout(null);
+		j.getContentPane().add(btnMfunction);
+		
+	
 
 	}
-
 }
