@@ -37,6 +37,7 @@ public class WinMain implements ActionListener{
     JMenu menuView = null;
     JMenu menuTool = null;
     JMenu menuHelp = null;
+    static InteractionTablePanle interactionTable;
 
     // 这里考虑后续的扩展需求，暂时将这两个成员变量保留
     static ArrayList _aryListVariableName = null; // 用来记录一次仿真过程，涉及到的全部变量名称
@@ -450,36 +451,8 @@ public class WinMain implements ActionListener{
         JPanel panel = new JPanel();
         mainTabbedPane.addTab("信息交互", null, panel, null);
         panel.setLayout(null);
+        interactionTable = new InteractionTablePanle(panel);
         
-        JPanel panel_3 = new JPanel();
-        panel_3.setBounds(21, 21, 372, 320);
-        panel.add(panel_3);
-        panel_3.setLayout(null);
-        
-        JTextPane textPane_7 = new JTextPane();
-        textPane_7.setBounds(108, 10, 164, 21);
-        panel_3.add(textPane_7);
-        textPane_7.setBackground(UIManager.getColor("Button.background"));
-        textPane_7.setText("信息模型  --->  物理模型");
-        
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(60, 70, 250, 210);
-        panel_3.add(scrollPane);
-        
-        JPanel panel_4 = new JPanel();
-        panel_4.setBounds(482, 21, 372, 320);
-        panel.add(panel_4);
-        panel_4.setLayout(null);
-        
-        JTextPane textPane_8 = new JTextPane();
-        textPane_8.setBounds(110, 10, 164, 21);
-        panel_4.add(textPane_8);
-        textPane_8.setText("物理模型  --->  信息模型");
-        textPane_8.setBackground(SystemColor.menu);
-        
-        JScrollPane scrollPane_1 = new JScrollPane();
-        scrollPane_1.setBounds(60, 70, 250, 210);
-        panel_4.add(scrollPane_1);
         
         /** 上面面代码是“开始”选项卡界面的各个组件 
          * add by -ZH
@@ -776,7 +749,7 @@ public class WinMain implements ActionListener{
 
 
     /****************************************************************
-     * //------不是很理解为何所有方法都要设成了静态方法？			-ZH
+ 
      *******************   private methods *************************/
 
     /** 以下是将socket格式设置成xml之后，用于处理socket消息所使用的函数定义，包括xml解析函数，数据提取函数
@@ -1119,6 +1092,9 @@ public class WinMain implements ActionListener{
                 ArrayList aryListDataSet = (ArrayList)aryListPhysicalDataset.get(i);
                 ArrayList aryListPointName = (ArrayList)aryListDataSet.get(0);
                 ArrayList<Double> aryListPointValue = (ArrayList<Double>)aryListDataSet.get(1);
+//******************************测试表格输出部分****************************************
+                Object[] str = new Object[3];
+                
                 for(int k = 0; k < aryListPointName.size(); ++k)
                 {
                     vcCaption.add( (String)aryListPointName.get(k) );
@@ -1127,7 +1103,11 @@ public class WinMain implements ActionListener{
                             dSimulationTime, 
                             //Double.valueOf((String) aryListPointValue.get(k)),
                             aryListPointValue.get(k),
-                            true);                   
+                            true); 
+                    str[0] = aryListPointName.get(k);
+                    str[1] = dSimulationTime;
+                    str[2] = aryListPointValue.get(k);
+                    interactionTable.addOneLine(str, 1);
                     //
                 }
 
@@ -1179,7 +1159,7 @@ public class WinMain implements ActionListener{
             // 数据合理，开始向每个Plot面板中添加数据点
             
             ArrayList aryListPhysicalDataset = _getSimulinkDataset(socketMessage); 
-
+            Object[] str = new Object[3];//biaoge
             for(int i = 0; i < aryListPhysicalDataset.size(); ++i)
             {
                 ArrayList aryListDataSet = (ArrayList)aryListPhysicalDataset.get(i);
@@ -1192,6 +1172,10 @@ public class WinMain implements ActionListener{
                             dSimulationTime, 
                             aryListPointValue.get(k), 
                             true);
+                    str[0] = aryListPointName.get(k);
+                    str[1] = dSimulationTime;
+                    str[2] = aryListPointValue.get(k);
+                    interactionTable.addOneLine(str, 1);
                 }
 
                 ((Plot)_aryListPlotPanel.get(i)).fillPlot(); // 重绘图形
