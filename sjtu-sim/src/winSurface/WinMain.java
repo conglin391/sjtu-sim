@@ -31,6 +31,8 @@ public class WinMain implements ActionListener{
     private int WIN_WIDTH; // 窗口的长
     private int WIN_HEIGHT; // 窗口的宽
     static JFrame mainFrame = null; // 程序主窗口变量
+    
+    static JConsoleTabbedPanel _consoleTabbedPanel = null; // add by bruse 2014-10-21
 
     static JPhysicalDataPlotPanel _physicalPlotPanel = null; // add by Bruse 2014-10-12
 
@@ -69,7 +71,7 @@ public class WinMain implements ActionListener{
     //             |--(ArrayList类型元素)
     //                     |--[0.845]
 
-    static int _iExtraTabbedPaneNum = 0; // 用来记录当前仿真程序共产生了几个Plot选项卡面板
+    static int _iExtraTabbedPaneNum = 0; // 用来记录当前仿真程序共产生了多少个额外的选项卡面板，所谓的Extra就是除去“控制台”选项卡，程序新添加的所有选项卡数量
 
     static ArrayList _aryListSimulinkPlotPanel = null; // 用来存放绘制物理仿真结果的那几个Card面板 --add by Bruse 2014-10-12
     static ArrayList <JPanel>_aryListPlotHoldPanel = null; // 用来存放Plot的面板的动态数组
@@ -115,12 +117,6 @@ public class WinMain implements ActionListener{
     //                     |--[0.845]
 
 
-
-    // add by ZH
-    private JTextField textField;
-    private JTextField textField_1;
-
-
     //将所有Action集合到此处，便于编写和修改 -ZH
     //因为本软件各种交互事件较多，建议：所以主界面中需要添加事件的，可直接添加.addActionListener(this)，然后在此类中捕获后用if判断，执行响应动作
     //若动作语句较长，建议分拆成单独的函数，利于结构的清晰（如打开xml，我暂且分拆成openPTxml函数）
@@ -149,8 +145,17 @@ public class WinMain implements ActionListener{
             //之后再加个确认窗口
             System.exit(0);
         }
+        
 
-
+    }
+    
+    public boolean getSimulationStatus()
+    {
+        return _bSimulationBegin;
+    }
+    public void setSimulationStatus(boolean simulationStatus)
+    {
+        _bSimulationBegin = simulationStatus;
     }
 
     public WinMain()
@@ -166,7 +171,7 @@ public class WinMain implements ActionListener{
         _aryListPhysicalDataset = new ArrayList();
         _aryListSimulinkPlotPanel = new ArrayList();
 
-        _iExtraTabbedPaneNum = 0; // 所谓的Extra就是出去“开始”选项卡，程序新添加的所有选项卡数量
+        _iExtraTabbedPaneNum = 0; // 所谓的Extra就是除去“控制台”选项卡，程序新添加的所有选项卡数量
 
         _bSimulationBegin = false;
 
@@ -179,15 +184,15 @@ public class WinMain implements ActionListener{
         _createWindowAndMenu();
 
 
-        // 下面开始创建选项卡面板，并创建一个“开始”选项卡加入到选项卡面板中去
-        _createTabbedPaneAndStartTabbedPanel();
+        // 下面开始创建选项卡面板，并创建一个“控制台”选项卡加入到选项卡面板中去
+        _createTabbedPaneAndConsoleTabbedPanel();
 
         _dataExchangePanel = new JDataShowTablePanel();
         mainTabbedPane.addTab("数据交互", _dataExchangePanel);
         //额外选项卡数量记录+1    add by Bruse, 2014-10-12
         ++_iExtraTabbedPaneNum;
 
-        String[] a = {"avc","12.2","123"};
+        /*String[] a = {"avc","12.2","123"};
         String[] b = {"V","0.063","9.0234"};
         for (int i=0;i<10;i++)
         {
@@ -195,9 +200,9 @@ public class WinMain implements ActionListener{
             { _dataExchangePanel.addOneLine(a, b); }
             else
             { _dataExchangePanel.addOneLine(b, a); }
-        }
+        }*/
 
-        
+
         /** 下面是测试 JPhysicalDataPlotPanel类的代码
          *  add by Bruse , 2014-10-11
          * */
@@ -295,173 +300,53 @@ public class WinMain implements ActionListener{
         menuHelp.add(menuItemInfoInHelp);
     }
 
-    private void _createTabbedPaneAndStartTabbedPanel()
-    {
-        // 下面开始创建选项卡面板，并创建一个“开始”选项卡加入到选项卡面板中去
 
+    private void _createTabbedPaneAndConsoleTabbedPanel() {
+        // 下面开始创建选项卡面板，并创建一个“开始”选项卡加入到选项卡面板中去
 
         mainTabbedPane = new JTabbedPane(); // 创建窗口加载的选项卡面板
         mainFrame.setContentPane(mainTabbedPane); // 设置窗口的显示面板为 上面的选项卡面板
         mainTabbedPane.setVisible(true); // 设置这个选项卡面板可见
         // 设置选项卡面板的大小及其选项卡的位置方向
-        //mainTabbedPane.setPreferredSize(new Dimension(500,200));
+        // mainTabbedPane.setPreferredSize(new Dimension(500,200));
         mainTabbedPane.setTabPlacement(JTabbedPane.TOP);
         // 设置选项卡在容器内的显示形式
         mainTabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-        //mainTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        // mainTabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         // mainFrame.pack(); // 让主窗口适应组件的大小
 
+        
         // 添加选项卡容器，并且设置每个选项卡的标签以及其是否可用
 
-        /*JPanel panel0 = new JPanel();
-        panel0.setSize(800,900);
-        panel0.setBorder(new LineBorder(new Color(255,255,100),2,true));
+        /*
+         * JPanel panel0 = new JPanel(); panel0.setSize(800,900);
+         * panel0.setBorder(new LineBorder(new Color(255,255,100),2,true));
+         * 
+         * 
+         * JScrollPane jScrollPanel0 = new JScrollPane(panel0,
+         * ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+         * ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+         */
 
+        /*
+         * jScrollPanel0.setLayout(new BorderLayout());
+         * 
+         * jScrollPanel0.add(panel0,"Center");
+         */
 
-        JScrollPane jScrollPanel0 = new JScrollPane(panel0,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);*/
+        // JScrollPane startpanel = new JScrollPane();
 
-
-        /*jScrollPanel0.setLayout(new BorderLayout());
-
-        jScrollPanel0.add(panel0,"Center");*/
-
-        JScrollPane panel0 = new JScrollPane();
-
-        mainTabbedPane.addTab("开始",panel0); // 将“开始”面板 panel0 作为第一个选项卡
-        mainTabbedPane.setEnabledAt(0,true);
+        _consoleTabbedPanel = new JConsoleTabbedPanel(mainFrame, this);
+        mainTabbedPane.addTab("控制台", _consoleTabbedPanel); // 将“开始”面板 panel0 作为第一个选项卡
+        mainTabbedPane.setEnabledAt(0, true);
 
         // jScrollPanel0.scrollRectToVisible(new Rectangle(900,500));
-        /** 下面代码是“开始”选项卡界面的各个组件 
-         * add by -ZH
-         * */ 
-
-        mainTabbedPane.setEnabledAt(0,true);
-        panel0.setLayout(null);
-
-        JPanel panel_1 = new JPanel();
-        panel_1.setToolTipText("");
-        panel_1.setBounds(85, 28, 696, 75);
-        panel0.add(panel_1);
-        panel_1.setLayout(null);
-
-        JButton button = new JButton("开始");
-        button.setBounds(50, 10, 57, 23);
-        panel_1.add(button);
-
-        JButton button_1 = new JButton("暂停");
-        button_1.setBounds(117, 10, 57, 23);
-        panel_1.add(button_1);
-
-        JButton button_2 = new JButton("停止");
-        button_2.setBounds(184, 10, 57, 23);
-        panel_1.add(button_2);
-
-        textField = new JTextField();
-        textField.setBounds(270, 11, 66, 21);
-        panel_1.add(textField);
-        textField.setColumns(10);
-
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setBounds(158, 43, 487, 22);
-        panel_1.add(progressBar);
-
-        textField_1 = new JTextField();
-        textField_1.setBounds(50, 44, 66, 21);
-        panel_1.add(textField_1);
-        textField_1.setColumns(10);
-
-        Choice choice = new Choice();
-        choice.setBounds(365, 12, 172, 21);
-        panel_1.add(choice);
-
-        JButton button_3 = new JButton("打开");
-        button_3.setBounds(561, 10, 34, 23);
-        panel_1.add(button_3);
-
-        JButton btnNewButton_1 = new JButton("上一层");
-        btnNewButton_1.setBounds(605, 10, 76, 23);
-        panel_1.add(btnNewButton_1);
-        btnNewButton_1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-
-        JSeparator separator = new JSeparator();
-        separator.setBounds(0, 113, 879, 2);
-        panel0.add(separator);
-
-        JSeparator separator_1 = new JSeparator();
-        separator_1.setBounds(0, 179, 879, 2);
-        panel0.add(separator_1);
-
-        JTextPane textPane = new JTextPane();
-        textPane.setBackground(UIManager.getColor("Button.background"));
-        textPane.setText("仿真");
-        textPane.setBounds(10, 10, 49, 21);
-        panel0.add(textPane);
-
-        JTextPane textPane_1 = new JTextPane();
-        textPane_1.setText("建模");
-        textPane_1.setBackground(SystemColor.menu);
-        textPane_1.setBounds(10, 129, 49, 21);
-        panel0.add(textPane_1);
-
-        JTextPane textPane_2 = new JTextPane();
-        textPane_2.setText("交互");
-        textPane_2.setBackground(SystemColor.menu);
-        textPane_2.setBounds(10, 191, 49, 21);
-        panel0.add(textPane_2);
-
-        JPanel panel_2 = new JPanel();
-        panel_2.setBounds(55, 203, 764, 138);
-        panel0.add(panel_2);
-        panel_2.setLayout(null);
-
-        MFunctionPanel _mFunctionPanel = new MFunctionPanel();
-
-        panel_2.add(_mFunctionPanel);
-
-
-
-        JButton button_4 = new JButton("建立离散控制模型");
-        button_4.setBounds(69, 139, 136, 23);
-        panel0.add(button_4);
-
-        Choice choice_1 = new Choice();
-        choice_1.setBounds(215, 139, 172, 21);
-        panel0.add(choice_1);
-
-        JButton btnNewButton = new JButton("打开PT模型");
-        btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-        btnNewButton.setBounds(393, 139, 32, 23);
-        panel0.add(btnNewButton);
-
-        JButton button_5 = new JButton("建立连续动态模型");
-        button_5.setBounds(469, 139, 136, 23);
-        panel0.add(button_5);
-
-        Choice choice_2 = new Choice();
-        choice_2.setBounds(609, 141, 172, 21);
-        panel0.add(choice_2);
-
-        JButton btnmatlab = new JButton("打开Matlab模型");
-        btnmatlab.setBounds(787, 139, 32, 23);
-        panel0.add(btnmatlab);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            }
-        });
-
-        /** 上面代码是“开始”选项卡界面的各个组件 
-         * add by -ZH
-         * */ 
+        
+        
+        
     }
 
+    
     private void openPTxml(){
         // 创建一个文件选择对话框，供用户选择 .xml 文件
         JFileChooser fileChooser = new JFileChooser("D:\\");
@@ -1072,8 +957,8 @@ public class WinMain implements ActionListener{
             // 更具两个数据集列表aryListCyberDataset和aryListCyberDataset，
             // 把数据点动态添加到动态表格(_dataExchangePanel)中
             _addExchangeDatasIntoTable(aryListCyberDataset,0.0,aryListPhysicalDataset,dSimulationTime);
-            
-            
+
+
             // 暂时没有实现把 aryListCyberDataset中的数据点画出来，也就是，没有吧PT传给simulink的数据画出来
             // 消息正确，开始针对aryListPhysicalDataset中每个变量数据集，添加好plot画图选项卡
             for(int i = 0; i < aryListPhysicalDataset.size(); ++i)
@@ -1247,10 +1132,10 @@ public class WinMain implements ActionListener{
 
                 ((Plot)_aryListPlotPanel.get(i)).fillPlot(); // 重绘图形
             }
-            
-            
+
+
             // 将数据添加到动态表格中显示
-            
+
             _addExchangeDatasIntoTable(_getPtolemyDataset(socketMessage), _dSimulationTime, aryListPhysicalDataset, dSimulationTime);
 
             // 更新当前类的静态循环次数变量
@@ -1296,37 +1181,37 @@ public class WinMain implements ActionListener{
     }
 
 
-static private void _addExchangeDatasIntoTable(ArrayList aryListCyberDataset,double last_simTime,ArrayList aryListPhysicalDataset,double dSimulationTime)
-{
-    // 考虑对参数进行检查
-    ArrayList <String>aryListName = (ArrayList <String>)aryListCyberDataset.get(0);
-    ArrayList <Double>aryListValue = (ArrayList <Double>)aryListCyberDataset.get(1);
-    // 将PT发送到matlab的数据添加到表格1中
-    for(int i=0; i<aryListName.size(); ++i)
+    static private void _addExchangeDatasIntoTable(ArrayList aryListCyberDataset,double last_simTime,ArrayList aryListPhysicalDataset,double dSimulationTime)
     {
-        Object[] a = new Object[3];
-        a[0] = aryListName.get(i);
-        a[1] = last_simTime;
-        a[2] = aryListValue.get(i);
-        _dataExchangePanel.addOneLine(a, 1);
-    }
-    
-    for(int i=0; i<aryListPhysicalDataset.size(); ++i)
-    {
-        aryListName = ((ArrayList <ArrayList>)(aryListPhysicalDataset.get(i))).get(0);
-        aryListValue = ((ArrayList <ArrayList>)(aryListPhysicalDataset.get(i))).get(1);
-        for(int j=0; j<aryListName.size(); ++j)
+        // 考虑对参数进行检查
+        ArrayList <String>aryListName = (ArrayList <String>)aryListCyberDataset.get(0);
+        ArrayList <Double>aryListValue = (ArrayList <Double>)aryListCyberDataset.get(1);
+        // 将PT发送到matlab的数据添加到表格1中
+        for(int i=0; i<aryListName.size(); ++i)
         {
             Object[] a = new Object[3];
-            a[0] = aryListName.get(j);
-            a[1] = dSimulationTime;
-            a[2] = aryListValue.get(j);
-            _dataExchangePanel.addOneLine(a, 2);
+            a[0] = aryListName.get(i);
+            a[1] = last_simTime;
+            a[2] = aryListValue.get(i);
+            _dataExchangePanel.addOneLine(a, 1);
         }
+
+        for(int i=0; i<aryListPhysicalDataset.size(); ++i)
+        {
+            aryListName = ((ArrayList <ArrayList>)(aryListPhysicalDataset.get(i))).get(0);
+            aryListValue = ((ArrayList <ArrayList>)(aryListPhysicalDataset.get(i))).get(1);
+            for(int j=0; j<aryListName.size(); ++j)
+            {
+                Object[] a = new Object[3];
+                a[0] = aryListName.get(j);
+                a[1] = dSimulationTime;
+                a[2] = aryListValue.get(j);
+                _dataExchangePanel.addOneLine(a, 2);
+            }
+        }
+
+
     }
-    
-    
-}
     static private ArrayList _getDataSets(String str)
     {
         ArrayList aryListDataSets = new ArrayList();
@@ -1507,8 +1392,7 @@ static private void _addExchangeDatasIntoTable(ArrayList aryListCyberDataset,dou
         //            e.printStackTrace();   
         //        }
     }
-
-
+    
 }
 
 
