@@ -28,7 +28,7 @@ public class JPhysicalDataPlotPanel extends JPanel {
         add(_mainPlotPanel,BorderLayout.CENTER);
         add(_buttonPanel,BorderLayout.SOUTH);
         
-        JButton buttonPre = new JButton("上一页");
+        JButton buttonPre = new JButton("<< 上一页");
         buttonPre.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -76,10 +76,33 @@ public class JPhysicalDataPlotPanel extends JPanel {
         _aryListButton.add(b);
     }
     
+    public void addOneCard(JPanel oneCardPanel, String buttonLabel)
+    {
+        // 重载函数，这个函数第二个参数是可以指定加入的 oneCardPanel对应的按钮名称。
+        _aryListPlotPanel.add(oneCardPanel);
+
+        // cardPanel还是按照标号1、2、3、4...来添加，因为后面的事件处理函数会按照标号来显示对应的panel
+        int iButtonNum = _aryListPlotPanel.size();
+        _mainPlotPanel.add(oneCardPanel, String.valueOf(iButtonNum));
+        
+        // 按钮显示的文本可以按照指定的字符串来设定
+        JButton b = new JButton(buttonLabel); // 显示第几页的按钮
+        b.addActionListener(new ActionListener()
+        {
+            int iButtonNum = _aryListPlotPanel.size();
+            public void actionPerformed(ActionEvent e)
+            {
+                cardLayout.show(_mainPlotPanel,String.valueOf(iButtonNum));
+            }
+        });
+        
+        _aryListButton.add(b);
+    }
+    
     public void showButtons()
     {
         // 先创建好“下一页”按钮
-        JButton buttonNext = new JButton("下一页");
+        JButton buttonNext = new JButton("下一页 >>");
         buttonNext.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)

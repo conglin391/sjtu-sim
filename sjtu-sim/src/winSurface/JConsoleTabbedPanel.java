@@ -30,6 +30,7 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
      * */
     private JFrame _mainFrame; // 用于存放界面的主窗口指针，以便在事件响应函数中弹出对话框的代码处传入
     private WinMain _pWinMain; // 界面主类的指针
+    private double settedSimTime = 1000.0;
 
     private JTextField SimTime;
     private Choice choiceMatlabmdlPath, choicePTmdlPath,choicePTXMLPath;
@@ -39,12 +40,17 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
     private JButton button_pause;
     private JButton button_stop;
 
+    /**
+     * @wbp.parser.constructor
+     */
     public JConsoleTabbedPanel(JFrame mainFrame, WinMain pWinMain) {
         // TODO Auto-generated constructor stub
 
         // 类成员变量赋初值
         _mainFrame = mainFrame;
         _pWinMain = pWinMain;
+
+        settedSimTime = 1000.0;
 
         // 开始创建各个按钮和文本框
         /**
@@ -60,31 +66,65 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
         add(panel_sim);
         panel_sim.setLayout(null);
 
-        button_start = new JButton("启动仿真");
-        button_start.setIcon(new ImageIcon(WinMain.class
-                .getResource("/winSurface/UIResource/start.jpg")));
-        button_start.setBounds(79, 10, 28, 23);
-        button_start.setEnabled(false); // 初始启动按钮不可用
+        button_start = new JButton("");
+        button_start.setEnabled(false);
+        Color cc= new Color(240,240,240);
+        button_start.setForeground(Color.BLACK);
+        button_start.setIcon(new ImageIcon(JConsoleTabbedPanel.class.getResource("/winSurface/UIResource/start.jpg")));
+        button_start.setIconTextGap(0);
+
+        button_start.setBounds(77, 10, 30, 27); // 30*27，这个“启动”图片的像素尺寸
         panel_sim.add(button_start);
         button_start.addActionListener(this);
 
-        button_pause = new JButton("暂停仿真");
+        button_pause = new JButton("");
+        button_pause.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
         button_pause.setIcon(new ImageIcon(WinMain.class
                 .getResource("/winSurface/UIResource/pause.jpg")));
-        button_pause.setBounds(132, 10, 28, 23);
+        button_pause.setBounds(132, 10, 30, 27); // 30*27，这是“暂停”按钮的像素尺寸
         button_pause.setEnabled(false); // 按钮刚被加载到界面上时，“暂停”不可用，因为还没有仿真在运行
         button_pause.setVisible(false); // ***先隐藏掉这个按钮，这个 暂停\继续 功能目前没有可行的解决方案，捉急！******
         panel_sim.add(button_pause);
+        button_pause.addActionListener(this);
 
-        button_stop = new JButton("停止仿真");
+        button_stop = new JButton("");
         button_stop.setIcon(new ImageIcon(WinMain.class
                 .getResource("/winSurface/UIResource/stop.jpg")));
-        button_stop.setBounds(184, 10, 28, 23);
+        button_stop.setBounds(184, 10, 29, 27); // 29*27,这是“停止”按钮的像素尺寸
         button_stop.setEnabled(false); // 刚加载时，“停止”按钮不可用
         panel_sim.add(button_stop);
+        button_stop.addActionListener(this);
 
         SimTime = new JTextField();
-        SimTime.setBounds(270, 11, 66, 21);
+        SimTime.setBounds(240, 11, 80, 21);
+        SimTime.setText("1000");
+        // 对这个确定“仿真总时间”的文本框添加事件监听
+        SimTime.addFocusListener(new java.awt.event.FocusAdapter(){
+
+            public void focusLost(FocusEvent e) {
+                double simTime = Double.valueOf( ((JTextField)e.getSource()).getText() );
+                if( simTime < 0.0 )
+                {
+                    // 设置的仿真时间不合法
+                    JOptionPane.showInternalMessageDialog(
+                            (((e.getComponent()).getParent()).getParent()).getParent(), 
+                            "总仿真时间必须为正值！", 
+                            "错误！您设置的总仿真时间不合法，请重新输入！", JOptionPane.ERROR_MESSAGE);
+                    ((JTextField)e.getSource()).requestFocus();
+                    return; // 结束这次消息处理
+                }
+                else
+                {
+                    settedSimTime = simTime;
+                }
+
+            }
+        }
+                );
+
         panel_sim.add(SimTime);
         SimTime.setColumns(10);
 
@@ -93,29 +133,27 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
         progressBar.setBounds(158, 43, 487, 22);
         progressBar.setMaximum(100);
         progressBar.setMinimum(0);
+        progressBar.setString("0%");
 
         panel_sim.add(progressBar);
 
         progressNum = new JTextField();
-        progressNum.setText("95.9%");
+        progressNum.setEditable(false);
+        progressNum.setText("0.0%");
         progressNum.setBounds(100, 43, 48, 21);
         panel_sim.add(progressNum);
         progressNum.setColumns(10);
-        String progressnow = progressNum.getText().trim().replace("%", "");
-        progressBar.setValue((int) Double.parseDouble(progressnow));
+        // String progressnow = progressNum.getText().trim().replace("%", "");
+        progressBar.setValue( 0 ); // 初始进度为0 
 
         choicePTXMLPath = new Choice();
-        choicePTXMLPath.setBounds(365, 12, 172, 21);
+        choicePTXMLPath.setBounds(335, 12, 240, 21);
         panel_sim.add(choicePTXMLPath);
 
         JButton btn_choicePTXML = new JButton("打开PT模型");
-        btn_choicePTXML.setBounds(561, 10, 34, 23);
+        btn_choicePTXML.setBounds(600, 10, 34, 23);
         btn_choicePTXML.addActionListener(this);
         panel_sim.add(btn_choicePTXML);
-
-        JButton btnNewButton_1 = new JButton("上一层");
-        btnNewButton_1.setBounds(605, 10, 76, 23);
-        panel_sim.add(btnNewButton_1);
 
         JTextPane textPane_3 = new JTextPane();
         textPane_3.setText("仿真进度");
@@ -123,11 +161,6 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
         textPane_3.setBackground(SystemColor.menu);
         textPane_3.setBounds(27, 43, 63, 21);
         panel_sim.add(textPane_3);
-        btnNewButton_1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setProcess(12.3);
-            }
-        });
 
         JSeparator separator = new JSeparator();
         separator.setBounds(0, 113, 879, 2);
@@ -203,6 +236,10 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
          * */
 
 
+        // 下面代码纯属临时测试
+        /*addOneXMLfilePath("哈哈");
+        addOneXMLfilePath("hehlo");*/
+
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -218,7 +255,7 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                         "错误的文件类型", JOptionPane.ERROR_MESSAGE);
             }
         }
-        if (cmd.equals("选择PT模型")) {
+        else if (cmd.equals("选择PT模型")) {
             String filename = choiceMatlabMdl("xml");
             if (filename.endsWith(".xml")) {
                 choicePTmdlPath.addItem(filename);
@@ -228,7 +265,7 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                         "错误的文件类型", JOptionPane.ERROR_MESSAGE);
             }
         }
-        if (cmd.equals("建立离散控制模型")) {
+        else if (cmd.equals("建立离散控制模型")) {
             try {
                 String file = choicePTmdlPath.getSelectedItem();
                 if (file.equals("Create New model")) {
@@ -241,7 +278,7 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                 e1.printStackTrace();
             }
         }
-        if (cmd.equals("建立连续动态模型")) {
+        else if (cmd.equals("建立连续动态模型")) {
             try {
                 String file = choiceMatlabmdlPath.getSelectedItem();
                 if (file.equals("Create New model")) {
@@ -253,22 +290,23 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                 e1.printStackTrace();
             }
         }
-        if (cmd.equals("打开PT模型")) {
+        else if (cmd.equals("打开PT模型")) {
             String filename = choiceMatlabMdl("xml");
             if (filename.endsWith(".xml")) {
                 choicePTXMLPath.addItem(filename);
                 choicePTXMLPath.select(filename);
-                
+
                 // xml文件有效，此时让“启动仿真”按钮变成有效, add by bruse, 2014-10-22
                 button_start.setEnabled(true);
-                
+
             } else {
                 JOptionPane.showMessageDialog(_mainFrame, "不是 .xml文件，请重新选择！",
                         "错误的文件类型", JOptionPane.ERROR_MESSAGE);
             }
         }
 
-        if (cmd.equals("启动仿真"))
+        //if (cmd.equals("启动仿真"))
+        else if (e.getSource()==button_start)
         {
             // if( choicePTXMLPath.countItems() == 0) return;
             String fileName = choicePTXMLPath.getItem(0);
@@ -289,7 +327,7 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                     if( iStartNewSim == JOptionPane.YES_OPTION )
                     {
                         try {
-                            
+
                             String commandStr="taskkill /f /im MATLAB.exe";
                             Process p = Runtime.getRuntime().exec(commandStr);
                             // 等待命令执行完毕，在执行后续操作
@@ -322,79 +360,105 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
                             // TODO Auto-generated catch block
                             e1.printStackTrace();
                         }
-                        
-                        _pWinMain.setSimulationStatus(false); // 设置界面并没有真正开始运行仿真
-                        
-                        button_start.setEnabled(false); // “启动仿真”按钮不可用
-                        button_stop.setEnabled(true); // “结束仿真”按钮可用
+
+
 
                     }
                     else
                     {
                         return; // 事件处理函数结束，不会启动新的仿真
                     }                            
-                } //  if( _bSimulationBegin == true )
-              
+                } //  if( _pWinMain.getSimulationStatus() == true )
+
+                // 没有旧的仿真信息，一切正常，可以启动新的仿真
                 try
                 {
                     Runtime.getRuntime().exec(startVergilcmd);
+
+                    _pWinMain.setSimulationStatus(false); // 设置界面并没有真正开始运行仿真
+
+                    button_start.setEnabled(false); // “启动仿真”按钮不可用
+                    button_stop.setEnabled(true); // “结束仿真”按钮可用
+
+                    SimTime.setEditable(false); // 仿真开始后，不可以再输入仿真时间
                 }
                 catch(Exception e1)
                 {}              
 
             } // if( fileName.endsWith("xml") ) // 选中的确实是xml文件
         }
-        if (cmd.equals("停止仿真"))
+        //if (cmd.equals("停止仿真"))
+        else if (e.getSource()==button_stop)
         {
             // 停止仿真进程，目前考虑直接用 windows的taskkill命令强制关闭PT和matlab
             if( _pWinMain.getSimulationStatus() == true ) // 确实有仿真在运行
             {
-                // 用taskkill杀死进程
-                try {
-
-                    String commandStr="taskkill /f /im MATLAB.exe"; 
-                    Process p = Runtime.getRuntime().exec(commandStr);
-                    // 等待命令执行完毕，在执行后续操作
-                    if(p.waitFor() != 0)
-                    {
-                        if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
-                        {
-                            // do nothing
-                        }
-                        else
-                        {
-                            // 表示taskkill命令执行失败，考虑生成日志文件报告错误
-                        }
-                    }
-                    commandStr="taskkill /f /im vergil.exe"; 
-                    p = Runtime.getRuntime().exec(commandStr);
-                    // 等待命令执行完毕，在执行后续操作
-                    if(p.waitFor() != 0)
-                    {
-                        if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
-                        {
-                            // do nothing
-                        }
-                        else
-                        {
-                            // 表示taskkill命令执行失败，考虑生成日志文件报告错误
-                        }
-                    }
-                } catch (Exception e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                int iStopSimulation = JOptionPane.showConfirmDialog(_mainFrame, 
+                        "目前系统仿真程序正在运行，点击“是”将关闭所有的仿真进程，“否”则忽略这次操作", 
+                        "是否结束当前仿真程序", 
+                        JOptionPane.YES_NO_OPTION);
+                if( iStopSimulation != JOptionPane.YES_OPTION ) // 不想真正关闭
+                {
+                    return;
                 }
-                
-                // 将软件的仿真运行标志重置为false，表示可以开启新的仿真
-                _pWinMain.setSimulationStatus(false);
-                
-                button_start.setEnabled(true); // “启动”按钮可用，表示可以开始新的仿真
-                button_stop.setEnabled(false); // 将自身变成不可用，因为没有仿真在运行
             }
             else
             {
-                // 没有仿真在运行，但“停止仿真”按钮可用，出现严重错误，考虑生成日志文件
+                // 没有仿真在运行，但“停止仿真”按钮可用
+                int iStopSimulation = JOptionPane.showConfirmDialog(_mainFrame, 
+                        "目前系统的仿真程序并没有正真启动，点击“是”将关闭所有的仿真进程，“否”则忽略这次操作", 
+                        "是否结束已开启的仿真程序", 
+                        JOptionPane.YES_NO_OPTION);
+                if( iStopSimulation != JOptionPane.YES_OPTION ) // 不想真正关闭
+                {
+                    return;
+                }              
             }
+
+            // 用taskkill杀死进程
+            try {
+
+                String commandStr="taskkill /f /im MATLAB.exe"; 
+                Process p = Runtime.getRuntime().exec(commandStr);
+                // 等待命令执行完毕，在执行后续操作
+                if(p.waitFor() != 0)
+                {
+                    if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
+                    {
+                        // do nothing
+                    }
+                    else
+                    {
+                        // 表示taskkill命令执行失败，考虑生成日志文件报告错误
+                    }
+                }
+                commandStr="taskkill /f /im vergil.exe"; 
+                p = Runtime.getRuntime().exec(commandStr);
+                // 等待命令执行完毕，在执行后续操作
+                if(p.waitFor() != 0)
+                {
+                    if( p.exitValue() == 1 ) // 0表示正常结束，1：非正常结束
+                    {
+                        // do nothing
+                    }
+                    else
+                    {
+                        // 表示taskkill命令执行失败，考虑生成日志文件报告错误
+                    }
+                }
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            // 将软件的仿真运行标志重置为false，表示可以开启新的仿真
+            _pWinMain.setSimulationStatus(false);
+
+            initButtonAndProgress(); // 对按钮和进度条组件做初始化
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -425,16 +489,120 @@ public class JConsoleTabbedPanel extends JPanel implements ActionListener{
 
     }
 
-
-    public void setProcess(double pro) {
-        progressNum.setText(pro + "%");
-        String progressnow = progressNum.getText().trim().replace("%", "");
-        progressBar.setValue((int) Double.parseDouble(progressnow));
+    public void setProcess(double currentTime) {
+        // double settedSimTime = Double.valueOf( SimTime.getText() );
+        if( currentTime > settedSimTime )
+        {
+            // 传入的仿真时间超过了用户设定的时间，就不用再跟新进度显示了，没有意义
+            return;
+        }
+        else
+        {
+            System.out.println(settedSimTime);
+            
+            double pro = currentTime / settedSimTime * 100;
+            String value_pro = String.valueOf(pro);
+            
+            System.out.println(value_pro);
+            
+            // value_pro = value_pro.substring(0, value_pro.indexOf('.')+3);// 只保留小数点后两位
+            progressNum.setText( value_pro + "%" );
+            progressBar.setValue( (int)pro );
+            progressBar.setString(value_pro + "%"); 
+        }
 
     }
 
     public void initComponents() {
 
+        // “开始”按钮不可用
+        button_start.setEnabled(false);
+
+        // “停止”按钮不可用
+        button_stop.setEnabled(false);
+
+        // “暂停/继续”按钮不可用
+        button_pause.setEnabled(false);
+
+        // “仿真时间”的输入文本框可用
+        SimTime.setEditable(true);
+
+        // “仿真进度”文本框的值置为 "0.0%"
+        progressNum.setText("0.0%");
+
+        // “仿真进度条”置为0
+        progressBar.setValue(0);
+
+        // 其他的仿真初始工作，主要修改各个组件的状态，回到软件初始的状态
+        choicePTXMLPath.removeAll();
+        choiceMatlabmdlPath.removeAll();
+        choicePTmdlPath.removeAll();
+
+    }
+
+    public void initButtonAndProgress()
+    {
+        // “开始”按钮可用与否取决于 choicePTXMLPath中的项目，如果有可用的项目，则“启动”按钮可用
+        if( choicePTXMLPath.getItemCount() > 0 )
+        {
+            button_start.setEnabled(true);
+        }
+        else
+        {
+            button_start.setEnabled(false);
+        }
+        // “停止”按钮不可用
+        button_stop.setEnabled(false);
+
+        // “暂停/继续”按钮不可用
+        button_pause.setEnabled(false);
+
+        // “仿真时间”的输入文本框可用
+        SimTime.setEditable(true);
+
+        // “仿真进度”文本框的值置为 "0.0%"
+        progressNum.setText("0.0%");
+
+        // “仿真进度条”置为0
+        progressBar.setValue(0);
+    }
+
+    public void setStopAndPauseButtonEnabled(boolean b)
+    {
+        button_stop.setEnabled(b);
+        button_pause.setEnabled(b);
+    }
+    
+    public void setSimTimeEditable(boolean b)
+    {
+        SimTime.setEditable(b);
+    }
+    
+    public void resetProgress()
+    {
+        progressNum.setText("0.0%");
+        progressBar.setValue(0);
+    }
+
+    public void addOneXMLfilePath(String XMLfilePath)
+    {
+        // 参数检查
+        if( XMLfilePath == null || XMLfilePath.isEmpty() )
+        {
+            // 参数为空，发生错误，应该生成日志文件
+
+            return;
+        }
+
+        // 检查 待添加的字符串，choicePTXMLPath总是否已经存在
+        for(int i=0; i < choicePTXMLPath.getItemCount(); ++i)
+        {
+            if(choicePTXMLPath.getItem(i).equals(XMLfilePath))
+            {
+                return;
+            }
+        }
+        choicePTXMLPath.add(XMLfilePath);
     }
 
     public JConsoleTabbedPanel(LayoutManager arg0) {

@@ -54,12 +54,16 @@ public class JDataShowTablePanel extends JPanel {
 
 		int tableWidth = 372;
 		int tableHeight = 500;
+		int scrollPanelWidth = 372;
+		int scrollPanelHeight = 450;
+		int panelWidth = 372;
+		int panelHeight = 600;
 
 		setBounds(0, 0, 879, 362);
 
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
-		panel_1.setBounds(21, 21, tableWidth, tableHeight);
+		panel_1.setBounds(21, 21, 372, panelHeight);
 		add(panel_1);
 
 		JTextPane textPane = new JTextPane();
@@ -69,7 +73,7 @@ public class JDataShowTablePanel extends JPanel {
 		panel_1.add(textPane);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(60, 70, 250, tableHeight);
+		scrollPane.setBounds(60, 70, 250, scrollPanelHeight);
 		panel_1.add(scrollPane);
 
 		c2ptable = new JTable();
@@ -105,7 +109,7 @@ public class JDataShowTablePanel extends JPanel {
 
 		JPanel panel_2 = new JPanel();
 		panel_2.setLayout(null);
-		panel_2.setBounds(391, 21, tableWidth, tableHeight);
+		panel_2.setBounds(391, 21, 372, panelHeight);
 		add(panel_2);
 
 		JTextPane textPane_1 = new JTextPane();
@@ -115,7 +119,7 @@ public class JDataShowTablePanel extends JPanel {
 		panel_2.add(textPane_1);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(60, 70, 250, tableHeight + 5);
+		scrollPane_1.setBounds(60, 70, 250, scrollPanelHeight);
 		panel_2.add(scrollPane_1);
 
 		p2ctable = new JTable();

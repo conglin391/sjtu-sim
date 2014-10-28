@@ -290,6 +290,17 @@ public class WinMain implements ActionListener{
         menuItemExitInFile.setAccelerator(KeyStroke.getKeyStroke('X', java.awt.Event.CTRL_MASK, false));
         menuFile.add(menuItemExitInFile);        
 
+        
+        JMenuItem menuItemClearOldSimulation = new JMenuItem("清楚所有仿真信息(R)");
+        menuItemClearOldSimulation.setAccelerator(KeyStroke.getKeyStroke('R', java.awt.Event.CTRL_MASK, false));
+        menuEdit.add(menuItemClearOldSimulation);
+        
+        
+        
+        JMenuItem menuItemConfigure = new JMenuItem("设置");
+        menuTool.add(menuItemConfigure);
+        
+        
         JMenuItem menuItemGetHelpInHelp = new JMenuItem("使用说明");
         menuItemGetHelpInHelp.addActionListener(this);
         menuHelp.add(menuItemGetHelpInHelp);
@@ -370,6 +381,10 @@ public class WinMain implements ActionListener{
             if( fileName.endsWith("xml") ) // 选中的确实是xml文件
             {
                 // 将选中的xml文件传给 Vergil，开启仿真
+                
+                // 先将选中的文件路径添加到“控制台”的XML文件列表中
+                _consoleTabbedPanel.addOneXMLfilePath(file.getAbsolutePath());
+                
                 //String startVergilcmd = "vergil -run E:\\PT_workspace\\pvbattery_50-60_org.xml";
                 //针对路径空格问题，增加双引号  -ZH
                 String startVergilcmd = "vergil -run \"" + file.getAbsolutePath()+"\"";
@@ -439,7 +454,17 @@ public class WinMain implements ActionListener{
                     }                            
                 } //  if( _bSimulationBegin == true )
 
+                // 开启仿真
                 _startNewSimulationInVergil(startVergilcmd);
+                
+                // 将“控制台”选项卡中的“暂停”“停止”按钮激活
+                _consoleTabbedPanel.setStopAndPauseButtonEnabled(true);
+                
+                // 将“控制台”总时间文本框关闭
+                _consoleTabbedPanel.setSimTimeEditable(false);
+                
+                // 将“控制台”两个进度显示空间重置
+                _consoleTabbedPanel.resetProgress();
 
 
             } // if( fileName.endsWith("xml") ) // 选中的确实是xml文件
@@ -959,6 +984,9 @@ public class WinMain implements ActionListener{
             _addExchangeDatasIntoTable(aryListCyberDataset,0.0,aryListPhysicalDataset,dSimulationTime);
 
 
+            // 存放每个plot面板对应的标题
+            Vector<String> v_plotCaption = new Vector();
+            
             // 暂时没有实现把 aryListCyberDataset中的数据点画出来，也就是，没有吧PT传给simulink的数据画出来
             // 消息正确，开始针对aryListPhysicalDataset中每个变量数据集，添加好plot画图选项卡
             for(int i = 0; i < aryListPhysicalDataset.size(); ++i)
@@ -997,7 +1025,7 @@ public class WinMain implements ActionListener{
                     //
                 }
 
-                //((Plot)_aryListPlotPanel.get(i)).setCaptions(vcCaption); // 运行结果显示，
+                // ((Plot)_aryListPlotPanel.get(i)).setCaptions(vcCaption); // 运行结果显示，
                 // 这个函数只是在面板的下部添加了几行标题，并不是针对曲线进行添加，有待改进
 
 
@@ -1019,6 +1047,10 @@ public class WinMain implements ActionListener{
                     _iExtraTabbedPaneNum++;
                     mainTabbedPane.setEnabledAt(mainTabbedPane.getTabCount()-1,true);
                 }*/
+                
+                tabTitle = tabTitle.substring(1, tabTitle.length()); // 去掉第一个变量前的逗号
+                v_plotCaption.add(tabTitle);
+                
             }
 
             /* 下面根据数据集，创建好多个绘图面板 */
@@ -1035,7 +1067,9 @@ public class WinMain implements ActionListener{
                 }
                 else
                 {
-                    // 这种情况下，不止一个数据集，需要产生总的一个绘图panel，还有把_aryListPlotHoldPanel中的面板添加到_simulinkDataTabpaneName中去
+                    
+                    // 下面被注释的代码，本想是生成一个集合多个plot的panel并展示出来，结果不如人意，显示失败，有待改进
+                    /*// 这种情况下，不止一个数据集，需要产生总的一个绘图panel，还有把_aryListPlotHoldPanel中的面板添加到_simulinkDataTabpaneName中去
                     JScrollPane sumScrollPlotPanel = new JScrollPane(); // 这个panel布局管理将采用 GridLayout
                     JPanel sumPlotPanel = new JPanel();
                     // 根据数据集数量（也就是真实的Plot面板数量），计算需要的表格尺寸（行数、列数）
@@ -1055,24 +1089,24 @@ public class WinMain implements ActionListener{
                     {
                         // 将所有的绘图面板添加到表格中
                         sumPlotPanel.add(_aryListPlotHoldPanel.get(i_plot));
-                    }
+                    }*/
 
                     // 创建 JPhysicalDataPlotPanel 对象
 
                     _physicalPlotPanel = new JPhysicalDataPlotPanel();
 
-                    mainTabbedPane.add(_physicalPlotPanel, _simulinkDataTabpaneName);
+                    mainTabbedPane.addTab(_simulinkDataTabpaneName, _physicalPlotPanel);
 
                     // 额外选项卡数量记录+1
                     ++_iExtraTabbedPaneNum;
 
-                    _physicalPlotPanel.addOneCard(sumPlotPanel);
-                    _aryListSimulinkPlotPanel.add(sumPlotPanel);
+                   /* _physicalPlotPanel.addOneCard(sumPlotPanel);
+                    _aryListSimulinkPlotPanel.add(sumPlotPanel);*/
 
                     for(int i_plot = 0; i_plot < _aryListPlotHoldPanel.size(); ++i_plot)
                     {
                         // 将所有的绘图面板添加到  _physicalPlotPanel 中
-                        _physicalPlotPanel.addOneCard(_aryListPlotHoldPanel.get(i_plot));
+                        _physicalPlotPanel.addOneCard(_aryListPlotHoldPanel.get(i_plot), v_plotCaption.get(i_plot));
 
                         _aryListSimulinkPlotPanel.add(_aryListPlotHoldPanel.get(i_plot));
                     }
@@ -1093,6 +1127,9 @@ public class WinMain implements ActionListener{
 
             // 设置已存在仿真进程标志
             _bSimulationBegin = true;
+            
+            // 更新进度值和进度条的显示
+            _consoleTabbedPanel.setProcess(dSimulationTime);
 
             // 更新仿真时间， add by Bruse, 2014-8-23
             _dSimulationTime = dSimulationTime;
@@ -1141,6 +1178,9 @@ public class WinMain implements ActionListener{
             // 更新当前类的静态循环次数变量
             _iLoopCount = _getLoopCountFromXML(socketMessage);
 
+            // 更新进度值和进度条的显示
+            _consoleTabbedPanel.setProcess(dSimulationTime);
+            
             // 更新当前类的静态存放的仿真时间
             _dSimulationTime = dSimulationTime;
 
@@ -1417,6 +1457,9 @@ class JAVAFileFilter extends FileFilter{
     public String getDescription(){
         if (ext.equals("xml"))
             return "PT xml file (*.xml)";
+        
+        if (ext.equals("mdl"))
+            return "Matlab Simulink model file (*.mdl)";
         return "";
     }
 
